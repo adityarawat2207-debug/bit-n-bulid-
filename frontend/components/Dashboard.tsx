@@ -12,9 +12,11 @@ export function ScenarioBar({ scenarios, active, onSelect, busy }: {
   onSelect: (s: ScenarioId) => void;
   busy?: boolean;
 }) {
-  const incidents = scenarios.filter((s) => s.id !== "baseline");
+  const company = companyOf(active);
+  const incidents = scenarios.filter((s) => s.company === company.id && s.id !== company.baseline);
   return (
     <div className="flex flex-wrap items-center gap-3">
+      <CompanySwitch active={active} onSelect={onSelect} busy={busy} />
       <div role="group" aria-label="Trigger an incident" className="flex flex-wrap gap-1 rounded-xl border border-slate-800 bg-slate-900/70 p-1">
         {incidents.map((s) => {
           const on = active === s.id;
@@ -36,8 +38,8 @@ export function ScenarioBar({ scenarios, active, onSelect, busy }: {
         })}
       </div>
       <button
-        disabled={busy || active === "baseline"}
-        onClick={() => onSelect("baseline")}
+        disabled={busy || active === company.baseline}
+        onClick={() => onSelect(company.baseline)}
         className="rounded-lg border border-emerald-800 px-3 py-1.5 text-sm text-emerald-300 transition-colors hover:bg-emerald-950 disabled:border-slate-800 disabled:text-slate-500 disabled:hover:bg-transparent"
       >
         ↺ Reset to baseline
