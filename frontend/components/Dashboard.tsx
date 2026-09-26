@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { COMPANIES, companyOf } from "@/lib/companies";
 import { changeColor, confidence, pct, usd } from "@/lib/format";
 import type { IncidentDetail, Overview, Scenario, ScenarioId } from "@/lib/types";
 
@@ -42,6 +43,36 @@ export function ScenarioBar({ scenarios, active, onSelect, busy }: {
         ↺ Reset to baseline
       </button>
       {busy && <span className="text-xs text-slate-500">Analysing 30 days of data…</span>}
+    </div>
+  );
+}
+
+/** Pick which simulated company to analyse; switching starts at its healthy baseline. */
+export function CompanySwitch({ active, onSelect, busy }: {
+  active: ScenarioId;
+  onSelect: (s: ScenarioId) => void;
+  busy?: boolean;
+}) {
+  const current = companyOf(active);
+  return (
+    <div role="group" aria-label="Simulated company" className="flex w-fit gap-1 rounded-xl border border-slate-800 bg-slate-900/70 p-1">
+      {COMPANIES.map((c) => {
+        const on = c.id === current.id;
+        return (
+          <button
+            key={c.id}
+            aria-pressed={on}
+            disabled={busy}
+            onClick={() => !on && onSelect(c.baseline)}
+            className={`rounded-lg px-3 py-1.5 text-left text-sm leading-tight transition-colors disabled:cursor-wait ${
+              on ? "bg-sky-500/15 text-sky-100 ring-1 ring-sky-500/60" : "text-slate-400 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            <span className="font-medium">{c.name}</span>
+            <span className={`ml-1.5 text-xs ${on ? "text-sky-300/80" : "text-slate-500"}`}>{c.tagline}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
