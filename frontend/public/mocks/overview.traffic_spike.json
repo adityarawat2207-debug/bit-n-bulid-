@@ -1,5 +1,6 @@
 {
  "scenario": "traffic_spike",
+ "company": "shopx",
  "kpis": {
   "current_monthly": 12871,
   "baseline_monthly": 10283,

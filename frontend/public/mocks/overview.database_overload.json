@@ -1,5 +1,6 @@
 {
  "scenario": "database_overload",
+ "company": "shopx",
  "kpis": {
   "current_monthly": 13101,
   "baseline_monthly": 10283,

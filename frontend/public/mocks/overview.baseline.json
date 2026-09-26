@@ -1,5 +1,6 @@
 {
  "scenario": "baseline",
+ "company": "shopx",
  "kpis": {
   "current_monthly": 10315,
   "baseline_monthly": 10289,
