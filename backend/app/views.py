@@ -81,8 +81,8 @@ def overview(scenario):
 def _fmt_ratio_line(label, ratio, before, after):
     verb = "rose" if ratio >= 1 else "fell"
     if label == "user requests":
-        return f"User requests {verb} x{ratio:.2f} ({before:,.0f} -> {after:,.0f} per minute)"
-    return f"{label[0].upper() + label[1:]} {verb} x{ratio:.2f} ({before:.2f} -> {after:.2f})"
+        return f"User requests {verb} x{ratio:.2f} ({before:,.0f} → {after:,.0f} per minute)"
+    return f"{label[0].upper() + label[1:]} {verb} x{ratio:.2f} ({before:.2f} → {after:.2f})"
 
 
 def _evidence(c, r):
