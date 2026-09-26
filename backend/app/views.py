@@ -4,7 +4,7 @@ from functools import lru_cache
 from engine.anomaly import levels, node_cost, onset, run_rates, total_cost
 from engine.pipeline import analyse
 from engine.tradeoff import evaluate
-from simulator.model import EDGES, KIND, SCENARIOS, TOPO, generate, iso, iso_date
+from simulator.model import SCENARIOS, baseline_of, generate, iso, iso_date
 
 DETECT_AFTER_HOURS = 2  # the onset rule needs 2 sustained hours before it fires
 
@@ -24,12 +24,14 @@ def run(scenario):
 
 
 def scenarios():
-    return [dict(id=s, name=v["name"], description=v["description"]) for s, v in SCENARIOS.items()]
+    return [dict(id=s, name=v["name"], description=v["description"], company=v["company"].id,
+                 company_name=v["company"].name, baseline=baseline_of(v["company"]))
+            for s, v in SCENARIOS.items()]
 
 
 def _costs(d, r):
     """(baseline, current) monthly run-rate for every (node, resource type)."""
-    return {(n, rt): run_rates(x, r["base"], r["cur"]) for n in TOPO for rt, x in d["cost"][n].items()}
+    return {(n, rt): run_rates(x, r["base"], r["cur"]) for n in d["company"].TOPO for rt, x in d["cost"][n].items()}
 
 
 def _totals(costs):
@@ -60,15 +62,17 @@ def overview(scenario):
     breakdown = [dict(category=k, baseline=round(b), current=round(c))
                  for k, (b, c) in sorted(categories.items(), key=lambda kv: -kv[1][1])]
 
+    co = d["company"]
     services = []
-    for n in TOPO:
+    for n in co.TOPO:
         b = sum(v[0] for (m, _), v in costs.items() if m == n)
         c = sum(v[1] for (m, _), v in costs.items() if m == n)
-        services.append(dict(id=n, kind=KIND[n], cost_baseline=round(b), cost_current=round(c),
+        services.append(dict(id=n, kind=co.KIND[n], cost_baseline=round(b), cost_current=round(c),
                              change_pct=round(100 * (c / b - 1), 1) if b else 0.0))
 
     return dict(
         scenario=scenario,
+        company=co.id,
         kpis=dict(current_monthly=round(now), baseline_monthly=round(before), change_pct=round(pct, 1),
                   active_anomalies=int(has_incident),
                   preventable_monthly=top["savings_monthly"] if top and top["verdict"] == "RECOMMENDED" else 0),
@@ -110,6 +114,7 @@ def _evidence(c, r):
 
 def _why_not(c, d, r):
     n, m = c["service"], c["factors"]["metric"]
+    kind = d["company"].KIND[n]
     window_start = r["search_from"] - 48
     deploys = [(v, h) for (s, v, h) in d["deployments"] if s == n and h >= window_start]
     k = c["primary"]
@@ -120,7 +125,7 @@ def _why_not(c, d, r):
     if abs(own - 1) >= 0.05:
         return (f"Its own change ({k} x{own:.2f}) is real but explains only "
                 f"{c['factors']['dependency']:.0%} of the estimated cost increase")
-    if KIND[n] == "ingress" and c["inbound_change"] > 1.05:
+    if kind == "ingress" and c["inbound_change"] > 1.05:
         return (f"Its load rose x{c['inbound_change']:.2f}, but it only forwards user traffic; "
                 "the extra requests belong to the services behind it")
     if c["inbound_change"] > 1.05:
@@ -141,6 +146,7 @@ def incident(scenario):
     d, r = run(scenario)
     if r["root"] is None:
         return dict(incident=None)
+    co = d["company"]
     base, cur, root = r["base"], r["cur"], r["root"]
     _, _, pct = _totals(_costs(d, r))
     cost_on = r["cost_onset"]
@@ -148,12 +154,12 @@ def incident(scenario):
     affected = {b for _, b in prop_edges}
 
     nodes = []
-    for n in TOPO:
+    for n in co.TOPO:
         b, c = run_rates(node_cost(d, n), base, cur)
         state = "root" if n == root["service"] else "affected" if n in affected else "normal"
-        nodes.append(dict(id=n, kind=KIND[n], state=state, change_pct=round(100 * (c / b - 1), 1)))
+        nodes.append(dict(id=n, kind=co.KIND[n], state=state, change_pct=round(100 * (c / b - 1), 1)))
     edges = []
-    for (s, t) in EDGES:
+    for (s, t) in co.EDGES:
         before, now = levels(d["calls"][(s, t)], base, cur)
         edges.append(dict(source=s, target=t, calls_change_pct=round(100 * (now / before - 1), 1),
                           on_propagation_path=(s, t) in prop_edges))

@@ -2,11 +2,9 @@
 engine stage uses."""
 import numpy as np
 
-from simulator.model import TOPO
-
 
 def total_cost(d):
-    return sum(v for n in TOPO for v in d["cost"][n].values())
+    return sum(v for costs in d["cost"].values() for v in costs.values())
 
 
 def node_cost(d, n):
