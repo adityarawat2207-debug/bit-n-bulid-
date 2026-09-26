@@ -111,6 +111,7 @@ export function IncidentBanner({ incident, scenario }: { incident: IncidentDetai
 
 const CATEGORY_LABEL: Record<string, string> = {
   compute: "Compute", database: "Database", network: "Network", cache: "Cache (Redis)", storage: "Storage", cdn: "CDN",
+  queue: "Event queue", maps: "Maps API (per call)",
 };
 
 export function BreakdownTable({ rows }: { rows: Overview["breakdown"] }) {
