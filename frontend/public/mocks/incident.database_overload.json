@@ -1,0 +1,405 @@
+{
+ "incident": {
+  "id": "database_overload",
+  "detected_at": "2026-09-22T12:00:00Z",
+  "onset_at": "2026-09-22T10:00:00Z",
+  "severity": "medium",
+  "cost_change_pct": 16.0
+ },
+ "root_cause": {
+  "service": "order-service",
+  "confidence": 0.84,
+  "factors": {
+   "temporal": 1.0,
+   "dependency": 0.79,
+   "metric": 1.0,
+   "cost": 0.98,
+   "historical": 0.0
+  },
+  "evidence": [
+   "Queries/request to database rose x3.49 (3.00 -> 10.48)",
+   "Deployed v3.0 1h before its own behaviour changed",
+   "Accounts for 79% of the estimated cost increase through the services it calls",
+   "Total calls to database rose x3.50",
+   "Its change tracks the total cost curve (correlation 0.98)"
+  ]
+ },
+ "candidates": [
+  {
+   "service": "search-service",
+   "confidence": 0.44,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.2,
+    "metric": 0.14,
+    "cost": 0.89,
+    "historical": 0.5
+   },
+   "why_not": "Its own change (user requests x1.10) is real but explains only 20% of the estimated cost increase"
+  },
+  {
+   "service": "analytics",
+   "confidence": 0.38,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 0.5
+   },
+   "why_not": "Its load rose x1.66, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "database",
+   "confidence": 0.28,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.0,
+    "historical": 1.0
+   },
+   "why_not": "Its load rose x1.66, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "api-gateway",
+   "confidence": 0.15,
+   "factors": {
+    "temporal": 0.05,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.89,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x1.06, but it only forwards user traffic; the extra requests belong to the services behind it"
+  },
+  {
+   "service": "redis",
+   "confidence": 0.13,
+   "factors": {
+    "temporal": 0.03,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.84,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x1.10, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "auth-service",
+   "confidence": 0.05,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.01,
+    "metric": 0.04,
+    "cost": 0.25,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "image-service",
+   "confidence": 0.03,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.01,
+    "cost": 0.17,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "cdn",
+   "confidence": 0.02,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.16,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "payment-service",
+   "confidence": 0.01,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.05,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  }
+ ],
+ "graph": {
+  "nodes": [
+   {
+    "id": "api-gateway",
+    "kind": "ingress",
+    "state": "normal",
+    "change_pct": 4.6
+   },
+   {
+    "id": "auth-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 1.7
+   },
+   {
+    "id": "search-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 8.1
+   },
+   {
+    "id": "order-service",
+    "kind": "service",
+    "state": "root",
+    "change_pct": 45.6
+   },
+   {
+    "id": "image-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.4
+   },
+   {
+    "id": "payment-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": -0.0
+   },
+   {
+    "id": "redis",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": 5.9
+   },
+   {
+    "id": "cdn",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": 0.3
+   },
+   {
+    "id": "database",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 25.1
+   },
+   {
+    "id": "analytics",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 15.1
+   }
+  ],
+  "edges": [
+   {
+    "source": "api-gateway",
+    "target": "auth-service",
+    "calls_change_pct": 2.7,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "search-service",
+    "calls_change_pct": 10.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "order-service",
+    "calls_change_pct": 0.3,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "image-service",
+    "calls_change_pct": 0.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "search-service",
+    "target": "redis",
+    "calls_change_pct": 10.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "search-service",
+    "target": "database",
+    "calls_change_pct": 9.6,
+    "on_propagation_path": false
+   },
+   {
+    "source": "auth-service",
+    "target": "database",
+    "calls_change_pct": 2.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "order-service",
+    "target": "database",
+    "calls_change_pct": 249.8,
+    "on_propagation_path": true
+   },
+   {
+    "source": "order-service",
+    "target": "payment-service",
+    "calls_change_pct": -0.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "image-service",
+    "target": "cdn",
+    "calls_change_pct": 0.4,
+    "on_propagation_path": false
+   },
+   {
+    "source": "database",
+    "target": "analytics",
+    "calls_change_pct": 65.7,
+    "on_propagation_path": true
+   }
+  ]
+ },
+ "timeline": [
+  {
+   "t": "2026-09-22T09:00:00Z",
+   "service": "order-service",
+   "label": "order-service v3.0 deployed"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "order-service",
+   "label": "queries/request to database up x3.49"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "database",
+   "label": "database load up x1.66"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "analytics",
+   "label": "analytics load up x1.66"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": null,
+   "label": "Cloud cost starts rising"
+  },
+  {
+   "t": "2026-09-22T12:00:00Z",
+   "service": null,
+   "label": "Cost anomaly detected (+16.0%)"
+  }
+ ],
+ "impact": {
+  "total_monthly": 1631,
+  "by_cause": [
+   {
+    "service": "order-service",
+    "amount": 1298,
+    "landed": [
+     {
+      "service": "database",
+      "amount": 954
+     },
+     {
+      "service": "order-service",
+      "amount": 256
+     },
+     {
+      "service": "analytics",
+      "amount": 88
+     }
+    ]
+   },
+   {
+    "service": "search-service",
+    "amount": 333,
+    "landed": [
+     {
+      "service": "search-service",
+      "amount": 126
+     },
+     {
+      "service": "database",
+      "amount": 102
+     },
+     {
+      "service": "redis",
+      "amount": 56
+     },
+     {
+      "service": "api-gateway",
+      "amount": 39
+     },
+     {
+      "service": "analytics",
+      "amount": 9
+     }
+    ]
+   }
+  ]
+ },
+ "recommendations": [
+  {
+   "id": "fix_amplification:order-service:database",
+   "title": "Fix order-service query amplification to database",
+   "action": {
+    "type": "fix_amplification",
+    "source": "order-service",
+    "target": "database"
+   },
+   "savings_monthly": 1384,
+   "latency_pct": -92.5,
+   "error_pp": -0.46,
+   "db_cpu": 0.447,
+   "risk": "low",
+   "verdict": "RECOMMENDED",
+   "reasons": []
+  },
+  {
+   "id": "reduce_capacity:database:1.25",
+   "title": "Add database capacity +25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 1.25
+   },
+   "savings_monthly": -500,
+   "latency_pct": -80.5,
+   "error_pp": -0.46,
+   "db_cpu": 0.79,
+   "risk": "medium",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "costs $500/month more instead of saving"
+   ]
+  },
+  {
+   "id": "reduce_capacity:database:0.75",
+   "title": "Reduce database capacity 25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 0.75
+   },
+   "savings_monthly": 500,
+   "latency_pct": 0.0,
+   "error_pp": 25.19,
+   "db_cpu": 1.317,
+   "risk": "high",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "error rate +25.2pp > +0.5pp limit",
+    "DB CPU 132% > 85% headroom limit"
+   ]
+  }
+ ]
+}

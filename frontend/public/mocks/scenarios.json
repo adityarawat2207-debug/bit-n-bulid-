@@ -1,0 +1,22 @@
+[
+ {
+  "id": "baseline",
+  "name": "Healthy baseline",
+  "description": "Normal ShopX traffic with no incident"
+ },
+ {
+  "id": "search_query_explosion",
+  "name": "Search Query Explosion",
+  "description": "Search v2.0 deploy multiplies database queries per request"
+ },
+ {
+  "id": "traffic_spike",
+  "name": "Traffic Spike",
+  "description": "Image traffic jumps +340%; an unrelated search deploy lands just before it"
+ },
+ {
+  "id": "database_overload",
+  "name": "Database Overload",
+  "description": "Order v3.0 ships an N+1 query bug that saturates the database"
+ }
+]
