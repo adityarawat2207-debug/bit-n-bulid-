@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(1200px 400px at 50% -200px, rgb(56 189 248 / 0.06), transparent),
+    #020617; /* slate-950 */
+  color: #e2e8f0; /* slate-200 */
+}
+
+::selection {
+  background: rgb(56 189 248 / 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+input[type="range"] {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* React Flow: match the dark cards. The library stylesheet loads after this
+   file, so these selectors are scoped under .cp-graph to win on specificity. */
+.cp-graph .react-flow__attribution {
+  background: transparent;
+  opacity: 0.4;
+}
+.cp-graph .react-flow__attribution a {
+  color: #475569;
+}
+.cp-graph .react-flow__edge-textbg {
+  fill: #0f172a;
+  stroke: #334155;
+  stroke-width: 1;
+}
+.cp-graph .react-flow__edge-text {
+  fill: #cbd5e1;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.cp-graph .react-flow__edge.hot .react-flow__edge-textbg {
+  fill: #3f0d18;
+  stroke: #9f1239;
+}
+.cp-graph .react-flow__edge.hot .react-flow__edge-text {
+  fill: #fecdd3;
+}
