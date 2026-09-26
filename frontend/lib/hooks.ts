@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { Result, Source } from "./api";
-import { isScenario } from "./format";
+import { isScenario } from "./companies";
 import type { ScenarioId } from "./types";
 
 /** The active scenario lives in the URL (?scenario=) so demo links are shareable. */

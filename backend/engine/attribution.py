@@ -1,5 +1,5 @@
 """Cost attribution (PRD §26): an *estimated* contribution model."""
-from simulator.model import ENTRY, GATEWAY, KIND, TOPO, children, parents
+from simulator.company import GATEWAY
 
 from .anomaly import node_cost, run_rates
 
@@ -7,7 +7,7 @@ from .anomaly import node_cost, run_rates
 def node_deltas(d, base, cur):
     """Monthly run-rate cost change of every node."""
     out = {}
-    for n in TOPO:
+    for n in d["company"].TOPO:
         before, now = run_rates(node_cost(d, n), base, cur)
         out[n] = now - before
     return out
@@ -19,13 +19,14 @@ def attribute(d, delta, metric_of, base, cur):
     services with their own behaviour change keep what reaches them.
 
     Returns {holder: {node where the cost landed: $/month}}."""
-    held = {n: {n: max(0.0, delta[n])} for n in TOPO}
-    for n in reversed(TOPO):
-        keeps = KIND[n] == "service" and (n in ENTRY or metric_of[n] >= 0.3)
+    co = d["company"]
+    held = {n: {n: max(0.0, delta[n])} for n in co.TOPO}
+    for n in reversed(co.TOPO):
+        keeps = co.KIND[n] == "service" and (n in co.ENTRY or metric_of[n] >= 0.3)
         if n == GATEWAY:
-            targets = {c: d["calls"][(n, c)] for c in children(n)}
+            targets = {c: d["calls"][(n, c)] for c in co.children(n)}
         elif not keeps:
-            targets = {p: d["calls"][(p, n)] for p in parents(n)}
+            targets = {p: d["calls"][(p, n)] for p in co.parents(n)}
         else:
             continue
         dcalls = {t: max(0.0, s[cur].mean() - base.expected(s)[0][cur].mean()) for t, s in targets.items()}

@@ -1,8 +1,13 @@
 # API Contract (implemented in `backend/`; freeze at H1)
 
-Base path `/api/v1`. The backend is **stateless**: every call names a `scenario`, and the backend regenerates and reanalyses it (about 0.06s). "Reset to baseline" means switching to `scenario=baseline`. The frontend keeps the current scenario in the page URL (`?scenario=`), so a demo link is shareable.
+Base path `/api/v1`. The backend is **stateless**: every call names a `scenario`, and the backend regenerates and reanalyses it (about 0.06s). "Reset to baseline" means switching to the company's baseline scenario (`baseline` for ShopX, `ridenow_baseline` for RideNow). The frontend keeps the current scenario in the page URL (`?scenario=`), so a demo link is shareable.
 
-Scenario ids: `baseline`, `search_query_explosion`, `traffic_spike`, `database_overload`.
+There are two simulated companies. Scenario ids are unique across them, so the scenario alone picks the company:
+
+- ShopX (e-commerce): `baseline`, `search_query_explosion`, `traffic_spike`, `database_overload`.
+- RideNow (ride-hailing): `ridenow_baseline`, `ridenow_surge_pricing_storm`, `ridenow_gps_ping_flood`, `ridenow_matching_retry_storm`.
+
+Each company has its own graph, but both share two role names: `api-gateway` (ingress) and `database` (the only capacity target).
 
 Money is **USD per month (run-rate)**. Percentages are numbers (`34.2` = 34.2%). Times are ISO-8601 strings on simulated days 0–29, with a fixed start date chosen by the backend.
 
@@ -18,16 +23,21 @@ Errors: an unknown scenario returns 404, and an invalid what-if action returns 4
 
 ```json
 [
-  { "id": "baseline", "name": "Healthy baseline", "description": "No incident" },
-  { "id": "search_query_explosion", "name": "Search Query Explosion", "description": "Search v2.0 deploy multiplies database queries per request" }
+  { "id": "baseline", "name": "Healthy baseline", "description": "No incident",
+    "company": "shopx", "company_name": "ShopX", "baseline": "baseline" },
+  { "id": "ridenow_gps_ping_flood", "name": "GPS Ping Flood", "description": "Location v5.2 drops ping batching, ...",
+    "company": "ridenow", "company_name": "RideNow", "baseline": "ridenow_baseline" }
 ]
 ```
+
+`baseline` is the scenario id that "Reset to baseline" should switch to for that company.
 
 ## GET `/overview?scenario=`
 
 ```json
 {
   "scenario": "search_query_explosion",
+  "company": "shopx",
   "kpis": {
     "current_monthly": 13840,
     "baseline_monthly": 10240,
@@ -55,7 +65,7 @@ Notes:
 - `hourly` covers the last 7 days, which is enough for the chart and the replay animation.
 - `daily` covers all 30 days.
 - `active_incident_id` is `null` for the baseline scenario.
-- `breakdown` categories are `compute`, `database`, `network`, `cache`, `storage` and `cdn`.
+- `breakdown` categories depend on the company. ShopX has `compute`, `database`, `network`, `cache`, `storage` and `cdn`. RideNow has `compute`, `database`, `network`, `cache`, `queue`, `maps` (a per-call billed maps API) and `storage`.
 - `services[].kind` is `ingress`, `service` or `resource`.
 
 ## GET `/incident?scenario=`

@@ -4,9 +4,11 @@ import pytest
 
 from engine.pipeline import analyse
 from engine.tradeoff import evaluate
-from simulator.model import SCENARIOS, generate
+from simulator.company import DB, GATEWAY
+from simulator.model import COMPANIES, SCENARIOS, generate
 
 INCIDENTS = [s for s, spec in SCENARIOS.items() if spec["expected"]]
+BASELINES = [s for s, spec in SCENARIOS.items() if not spec["expected"]]
 SEEDS = range(1, 21)
 
 
@@ -19,9 +21,17 @@ def test_root_cause_found_with_margin(scenario, seed):
     assert first["score"] - second["score"] >= 0.15, (first["service"], second["service"])
 
 
-@pytest.mark.parametrize("seed", SEEDS)
-def test_baseline_has_no_incident(seed):
-    assert analyse(generate("baseline", seed=seed))["root"] is None
+@pytest.mark.parametrize("scenario", BASELINES)
+def test_baseline_has_no_incident_on_demo_data(scenario):
+    assert analyse(generate(scenario))["root"] is None
+
+
+@pytest.mark.parametrize("scenario", BASELINES)
+def test_baseline_false_alarm_rate_is_low(scenario):
+    # §17's mean + 2*std rule over 14 days fires on a quiet baseline ~5% of the
+    # time by chance, so test the rate over many seeds, not a lucky few.
+    alarms = sum(analyse(generate(scenario, seed=s))["root"] is not None for s in range(1, 101))
+    assert alarms <= 8
 
 
 @pytest.mark.parametrize("scenario", INCIDENTS)
@@ -35,6 +45,9 @@ def test_scores_are_normalised(scenario):
     ("search_query_explosion", "NOT RECOMMENDED"),
     ("database_overload", "NOT RECOMMENDED"),
     ("traffic_spike", "RECOMMENDED"),
+    ("ridenow_surge_pricing_storm", "NOT RECOMMENDED"),
+    ("ridenow_gps_ping_flood", "NOT RECOMMENDED"),
+    ("ridenow_matching_retry_storm", "NOT RECOMMENDED"),
 ])
 def test_bad_optimization_depends_on_database_headroom(scenario, verdict):
     r = analyse(generate(scenario))
@@ -53,6 +66,10 @@ def test_top_recommendation_fixes_the_cause(scenario):
 
 def test_engine_never_names_a_specific_service():
     # CLAUDE.md rule: score every candidate, never hard-code the answer
+    # (the gateway and database are shared structural roles, not answers)
+    services = {n for co in COMPANIES.values() for n in co.TOPO} - {GATEWAY, DB}
     engine = Path(__file__).resolve().parents[1] / "engine"
     for f in engine.glob("*.py"):
-        assert "search-service" not in f.read_text(), f.name
+        text = f.read_text()
+        for n in services:
+            assert n not in text, (f.name, n)

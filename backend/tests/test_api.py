@@ -7,7 +7,11 @@ from simulator.model import SCENARIOS
 
 client = TestClient(app)
 INCIDENTS = [s for s, spec in SCENARIOS.items() if spec["expected"]]
-CATEGORIES = {"compute", "database", "network", "cache", "storage", "cdn"}
+BASELINES = [s for s, spec in SCENARIOS.items() if not spec["expected"]]
+CATEGORIES = {
+    "shopx": {"compute", "database", "network", "cache", "storage", "cdn"},
+    "ridenow": {"compute", "database", "network", "cache", "queue", "maps", "storage"},
+}
 
 
 def get(path, **params):
@@ -26,31 +30,41 @@ def test_health():
     assert get("/health") == {"ok": True}
 
 
-def test_scenarios_lists_all_four():
-    assert [s["id"] for s in get("/scenarios")] == list(SCENARIOS)
+def test_scenarios_lists_every_company():
+    listed = get("/scenarios")
+    assert [s["id"] for s in listed] == list(SCENARIOS)
+    assert {s["company"] for s in listed} == {"shopx", "ridenow"}
+    for s in listed:
+        assert s["baseline"] in BASELINES
+        assert SCENARIOS[s["baseline"]]["company"].id == s["company"]
 
 
 @pytest.mark.parametrize("scenario", list(SCENARIOS))
 def test_overview_shape(scenario):
     o = get("/overview", scenario=scenario)
     k = o["kpis"]
-    assert {b["category"] for b in o["breakdown"]} == CATEGORIES
-    assert abs(sum(b["current"] for b in o["breakdown"]) - k["current_monthly"]) <= len(CATEGORIES)
+    cats = CATEGORIES[o["company"]]
+    assert o["company"] == SCENARIOS[scenario]["company"].id
+    assert {b["category"] for b in o["breakdown"]} == cats
+    assert abs(sum(b["current"] for b in o["breakdown"]) - k["current_monthly"]) <= len(cats)
     assert abs(sum(s["cost_current"] for s in o["services"]) - k["current_monthly"]) <= len(o["services"])
     assert len(o["hourly"]) == 7 * 24 and len(o["daily"]) == 30
-    assert o["daily"][-1]["anomalous"] == (scenario != "baseline")
-    assert o["active_incident_id"] == (None if scenario == "baseline" else scenario)
+    incident = scenario in INCIDENTS
+    assert o["daily"][-1]["anomalous"] == incident
+    assert o["active_incident_id"] == (scenario if incident else None)
 
 
-def test_baseline_reads_about_10240():
-    k = get("/overview", scenario="baseline")["kpis"]
-    assert abs(k["baseline_monthly"] - 10240) < 150
+@pytest.mark.parametrize("scenario,monthly", [("baseline", 10240), ("ridenow_baseline", 13980)])
+def test_baseline_reads_its_budget(scenario, monthly):
+    k = get("/overview", scenario=scenario)["kpis"]
+    assert abs(k["baseline_monthly"] - monthly) < 150
     assert abs(k["change_pct"]) < 3
     assert k["active_anomalies"] == 0 and k["preventable_monthly"] == 0
 
 
-def test_baseline_has_no_incident():
-    assert get("/incident", scenario="baseline") == {"incident": None}
+@pytest.mark.parametrize("scenario", BASELINES)
+def test_baseline_has_no_incident(scenario):
+    assert get("/incident", scenario=scenario) == {"incident": None}
 
 
 @pytest.mark.parametrize("scenario", INCIDENTS)
@@ -93,6 +107,7 @@ def test_unknown_scenario_is_404():
 @pytest.mark.parametrize("scenario", INCIDENTS)
 def test_template_explanation_uses_only_known_numbers(scenario, monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
     inc = get("/incident", scenario=scenario)
     e = post("/explain", {"scenario": scenario})
     assert e["source"] == "template"

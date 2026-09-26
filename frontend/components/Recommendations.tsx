@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { whatIf } from "@/lib/api";
+import { companyOf } from "@/lib/companies";
 import { confidence, pct, pp, usd } from "@/lib/format";
 import type { Action, IncidentDetail, Recommendation, ScenarioId } from "@/lib/types";
 import { Level, Verdict } from "./ui";
@@ -90,21 +91,18 @@ export function RecommendationCard({ rec, incident, currentMonthly }: {
   );
 }
 
-const ENTRY = ["search-service", "order-service", "image-service", "auth-service"];
-const EDGES: [string, string][] = [
-  ["search-service", "database"], ["search-service", "redis"], ["order-service", "database"],
-  ["order-service", "payment-service"], ["auth-service", "database"], ["image-service", "cdn"],
-];
-
 /** Build a custom action and simulate it against the live backend (PRD §29). */
 export function WhatIfPanel({ scenario, incident, currentMonthly }: {
   scenario: ScenarioId;
   incident: IncidentDetail | null;
   currentMonthly?: number;
 }) {
+  const company = companyOf(scenario);
+  const ENTRY = company.entry;
+  const EDGES = company.fixEdges;
   const [type, setType] = useState<Action["type"]>("reduce_capacity");
   const [capacity, setCapacity] = useState(0.75);
-  const [limitTarget, setLimitTarget] = useState(incident && ENTRY.includes(incident.root_cause.service) ? incident.root_cause.service : "image-service");
+  const [limitTarget, setLimitTarget] = useState(incident && ENTRY.includes(incident.root_cause.service) ? incident.root_cause.service : ENTRY[0]);
   const [limit, setLimit] = useState(1.2);
   const [edge, setEdge] = useState(() => {
     const e = EDGES.find(([s]) => s === incident?.root_cause.service);
@@ -194,7 +192,7 @@ export function WhatIfPanel({ scenario, incident, currentMonthly }: {
         {result && <RecommendationCard rec={result} incident={incident} currentMonthly={currentMonthly} />}
         {!result && !error && (
           <div className="flex h-40 animate-pulse items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-sm text-slate-500">
-            Simulating the change against the ShopX model…
+            Simulating the change against the {company.name} model…
           </div>
         )}
       </div>

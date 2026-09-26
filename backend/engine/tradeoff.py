@@ -1,41 +1,44 @@
 """Cost vs performance trade-off (PRD §27-29, §34). A fix is simulated on the
 same steady-state model that generated the data, starting from the operating
 point the engine measured."""
-from simulator.model import DB_CAPACITY, EDGES, ENTRY, GATEWAY, KIND, children, steady_state
+from simulator.company import DB, GATEWAY
 
 LIMITS = dict(latency_pct=10.0, error_pp=0.5, db_cpu=0.85)
 ACTION_TYPES = ("fix_amplification", "rate_limit", "reduce_capacity")
-CAPACITY_TARGETS = ("database",)  # the only node with a capacity model
+CAPACITY_TARGETS = (DB,)  # the only node with a capacity model
 
 
 def operating_point(d, base, cur):
-    """Mean demand and calls-per-request now (cur) and in the baseline window."""
+    """Mean demand and calls-per-request now (cur) and in the baseline window,
+    plus the company model to simulate fixes on."""
+    co = d["company"]
     now = lambda x: float(x[cur].mean())
     before = lambda x: float(x[base.lo:base.hi].mean())
-    internal = [e for e in EDGES if e[0] != GATEWAY]
+    internal = [e for e in co.EDGES if e[0] != GATEWAY]
     ratio = lambda e: d["calls"][e] / d["inbound"][e[0]]
     return dict(
-        demand={s: now(d["calls"][(GATEWAY, s)]) for s in ENTRY},
+        company=co,
+        demand={s: now(d["calls"][(GATEWAY, s)]) for s in co.ENTRY},
         ratios={e: now(ratio(e)) for e in internal},
-        base_demand={s: before(d["calls"][(GATEWAY, s)]) for s in ENTRY},
+        base_demand={s: before(d["calls"][(GATEWAY, s)]) for s in co.ENTRY},
         base_ratios={e: before(ratio(e)) for e in internal},
     )
 
 
-def validate(action):
+def validate(co, action):
     t = action.get("type")
     if t not in ACTION_TYPES:
         raise ValueError(f"unknown action type {t!r}; expected one of {', '.join(ACTION_TYPES)}")
     if t == "fix_amplification":
         e = (action.get("source"), action.get("target"))
-        if e not in EDGES or e[0] == GATEWAY:
+        if e not in co.EDGES or e[0] == GATEWAY:
             raise ValueError(f"no service-to-service edge {e[0]} -> {e[1]}")
         return
     value = action.get("value")
     if not isinstance(value, (int, float)) or not 0.1 <= value <= 5:
         raise ValueError("value must be a number between 0.1 and 5")
-    if t == "rate_limit" and action.get("target") not in ENTRY:
-        raise ValueError(f"rate_limit target must be one of {', '.join(ENTRY)}")
+    if t == "rate_limit" and action.get("target") not in co.ENTRY:
+        raise ValueError(f"rate_limit target must be one of {', '.join(co.ENTRY)}")
     if t == "reduce_capacity" and action.get("target") not in CAPACITY_TARGETS:
         raise ValueError(f"reduce_capacity target must be one of {', '.join(CAPACITY_TARGETS)}")
 
@@ -44,7 +47,7 @@ def describe(action):
     t = action["type"]
     if t == "fix_amplification":
         s, tgt = action["source"], action["target"]
-        what = "query" if tgt == "database" else "call"
+        what = "query" if tgt == DB else "call"
         return f"fix_amplification:{s}:{tgt}", f"Fix {s} {what} amplification to {tgt}"
     v = action["value"]
     if t == "rate_limit":
@@ -72,10 +75,11 @@ def _apply(action, op):
 
 def evaluate(op, action):
     """Simulate one action from the measured operating point."""
-    validate(action)
-    before = steady_state(op["demand"], op["ratios"])
+    co = op["company"]
+    validate(co, action)
+    before = co.steady_state(op["demand"], op["ratios"])
     demand, ratios, cap = _apply(action, op)
-    after = steady_state(demand, ratios, DB_CAPACITY * cap)
+    after = co.steady_state(demand, ratios, co.DB_CAPACITY * cap)
     monthly = lambda st: sum(sum(v.values()) for v in st["cost"].values()) * 24 * 30
     worst_err = lambda st: max(st["error"].values())
     savings = monthly(before) - monthly(after)
@@ -112,16 +116,17 @@ def candidate_actions(root, op):
     """Three options (PRD §27-29): fix the cause, treat the symptom by adding
     capacity, and the 'bad optimization' of cutting capacity (§34), which
     must always be last."""
+    co = op["company"]
     actions = []
     amplified = [((root, c), op["ratios"][(root, c)] / op["base_ratios"][(root, c)])
-                 for c in children(root) if (root, c) in op["ratios"]]
+                 for c in co.children(root) if (root, c) in op["ratios"]]
     edge, ratio = max(amplified, key=lambda t: t[1], default=(None, 1.0))
     if ratio > 1.5:
         actions.append(dict(type="fix_amplification", source=edge[0], target=edge[1]))
-    elif root in ENTRY and KIND[root] == "service":
+    elif root in co.ENTRY and co.KIND[root] == "service":
         actions.append(dict(type="rate_limit", target=root, value=1.2))
-    actions.append(dict(type="reduce_capacity", target="database", value=1.25))
-    actions.append(dict(type="reduce_capacity", target="database", value=0.75))
+    actions.append(dict(type="reduce_capacity", target=DB, value=1.25))
+    actions.append(dict(type="reduce_capacity", target=DB, value=0.75))
     return actions
 
 

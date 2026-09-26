@@ -16,16 +16,3 @@ export const confidence = (n: number) => `${Math.round(n * 100)}%`;
 
 export const changeColor = (n: number) =>
   n > 5 ? "text-rose-400" : n < -5 ? "text-emerald-400" : "text-slate-400";
-
-export const SCENARIO_IDS = ["baseline", "search_query_explosion", "traffic_spike", "database_overload"] as const;
-
-export const isScenario = (s: string | null): s is (typeof SCENARIO_IDS)[number] =>
-  !!s && (SCENARIO_IDS as readonly string[]).includes(s);
-
-// Mirrors /scenarios, so the header can name the scenario without a request.
-export const SCENARIO_NAMES: Record<(typeof SCENARIO_IDS)[number], string> = {
-  baseline: "Healthy baseline",
-  search_query_explosion: "Search Query Explosion",
-  traffic_spike: "Traffic Spike",
-  database_overload: "Database Overload",
-};

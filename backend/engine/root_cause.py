@@ -2,7 +2,7 @@
 no service is special-cased by name."""
 import numpy as np
 
-from simulator.model import ENTRY, GATEWAY, KIND, PRIOR_INCIDENTS, QUERY_WEIGHT, TOPO, children, parents
+from simulator.company import DB, GATEWAY
 
 from .anomaly import change, levels, onset, total_cost
 
@@ -17,15 +17,16 @@ def self_components(d, n):
     """Series describing behaviour that ORIGINATES at n (not load pushed onto
     it by callers). Services: user demand (if entry) + calls-per-request on
     each outbound edge. Database: CPU per unit of expected work."""
+    co = d["company"]
     comps = {}
-    if KIND[n] == "service":
-        if n in ENTRY:
+    if co.KIND[n] == "service":
+        if n in co.ENTRY:
             comps["user requests"] = d["calls"][(GATEWAY, n)]
-        for c in children(n):
-            label = f"queries/request to {c}" if c == "database" else f"calls/request to {c}"
+        for c in co.children(n):
+            label = f"queries/request to {c}" if c == DB else f"calls/request to {c}"
             comps[label] = d["calls"][(n, c)] / d["inbound"][n]
-    elif n == "database":
-        expected_work = sum(d["calls"][(s, n)] * QUERY_WEIGHT[s] for s in parents(n))
+    elif n == DB:
+        expected_work = sum(d["calls"][(s, n)] * co.QUERY_WEIGHT[s] for s in co.parents(n))
         comps["CPU per unit of work"] = d["db_cpu"] / expected_work
     return comps
 
@@ -33,10 +34,11 @@ def self_components(d, n):
 def score_candidates(d, base, cur, cost_on, search_from, corr_win):
     """Score every node on the five factors. The dependency factor needs the
     attribution pass, so it is left at 0 here and filled in by `finalize`."""
+    co = d["company"]
     tc = total_cost(d)
     tc_norm = tc / base.expected(tc)[0]
     candidates = []
-    for n in TOPO:
+    for n in co.TOPO:
         comps = self_components(d, n)
         changes = {k: float(change(s, base, cur)) for k, s in comps.items()}
         metric = max([min(1.0, abs(np.log(r)) / np.log(2)) for r in changes.values()], default=0.0)
@@ -61,7 +63,7 @@ def score_candidates(d, base, cur, cost_on, search_from, corr_win):
         c = np.corrcoef(s_norm[corr_win], tc_norm[corr_win])[0, 1]
         cost = max(0.0, float(np.nan_to_num(c)))
 
-        historical = min(1.0, 0.5 * PRIOR_INCIDENTS.get(n, 0))
+        historical = min(1.0, 0.5 * co.PRIOR_INCIDENTS.get(n, 0))
         factors = dict(temporal=float(temporal), dependency=0.0, metric=float(metric),
                        cost=cost, historical=historical)
         candidates.append(dict(
@@ -69,7 +71,7 @@ def score_candidates(d, base, cur, cost_on, search_from, corr_win):
             levels={k: levels(s, base, cur) for k, s in comps.items()},
             primary=primary, onset=node_on, deploy=deploy,
             inbound_change=float(change(d["inbound"][n], base, cur)) if d["inbound"][n].any() else 1.0,
-            prior_incidents=PRIOR_INCIDENTS.get(n, 0)))
+            prior_incidents=co.PRIOR_INCIDENTS.get(n, 0)))
     return candidates
 
 

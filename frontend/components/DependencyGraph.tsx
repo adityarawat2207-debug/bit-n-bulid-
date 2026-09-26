@@ -3,36 +3,18 @@
 import { Handle, MarkerType, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
+import { companyOf } from "@/lib/companies";
 import { pct } from "@/lib/format";
-import type { Graph, NodeKind, NodeState } from "@/lib/types";
+import type { Graph, NodeKind, NodeState, ScenarioId } from "@/lib/types";
 
-// Fixed layout (the backend never sends positions): ingress on top, services,
-// then the resources they call.
-const LAYOUT: Record<string, { x: number; y: number; kind: NodeKind }> = {
-  "api-gateway": { x: 285, y: 0, kind: "ingress" },
-  "auth-service": { x: 0, y: 125, kind: "service" },
-  "search-service": { x: 190, y: 125, kind: "service" },
-  "order-service": { x: 380, y: 125, kind: "service" },
-  "image-service": { x: 570, y: 125, kind: "service" },
-  redis: { x: 95, y: 255, kind: "resource" },
-  database: { x: 285, y: 255, kind: "resource" },
-  "payment-service": { x: 475, y: 255, kind: "service" },
-  cdn: { x: 640, y: 255, kind: "resource" },
-  analytics: { x: 285, y: 380, kind: "resource" },
-};
-
-// Used when there is no incident (baseline): same topology, everything normal.
-const STATIC_EDGES: [string, string][] = [
-  ["api-gateway", "auth-service"], ["api-gateway", "search-service"], ["api-gateway", "order-service"],
-  ["api-gateway", "image-service"], ["search-service", "redis"], ["search-service", "database"],
-  ["auth-service", "database"], ["order-service", "database"], ["order-service", "payment-service"],
-  ["image-service", "cdn"], ["database", "analytics"],
-];
-
-export const HEALTHY_GRAPH: Graph = {
-  nodes: Object.entries(LAYOUT).map(([id, p]) => ({ id, kind: p.kind, state: "normal", change_pct: 0 })),
-  edges: STATIC_EDGES.map(([source, target]) => ({ source, target, calls_change_pct: 0, on_propagation_path: false })),
-};
+// Used when there is no incident (baseline): the company's topology, everything normal.
+function healthyGraph(scenario: ScenarioId): Graph {
+  const c = companyOf(scenario);
+  return {
+    nodes: Object.entries(c.layout).map(([id, p]) => ({ id, kind: p.kind, state: "normal", change_pct: 0 })),
+    edges: c.edges.map(([source, target]) => ({ source, target, calls_change_pct: 0, on_propagation_path: false })),
+  };
+}
 
 const STATE_STYLE: Record<NodeState, string> = {
   root: "border-rose-500 bg-rose-950 shadow-[0_0_28px_-6px] shadow-rose-500/70",
@@ -71,17 +53,23 @@ function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
 
 const nodeTypes = { svc: ServiceNode };
 
-export default function DependencyGraph({ graph, height = 480 }: { graph: Graph | null; height?: number }) {
-  const g = graph ?? HEALTHY_GRAPH;
+export default function DependencyGraph({ scenario, graph, height = 480 }: {
+  scenario: ScenarioId;
+  graph: Graph | null;
+  height?: number;
+}) {
+  const g = useMemo(() => graph ?? healthyGraph(scenario), [graph, scenario]);
+  // fixed layout per company (the backend never sends positions)
+  const layout = companyOf(scenario).layout;
   const nodes: Node<SvcData>[] = useMemo(
     () =>
       g.nodes.map((n) => ({
         id: n.id,
         type: "svc",
-        position: LAYOUT[n.id] ?? { x: 0, y: 520 },
+        position: layout[n.id] ?? { x: 0, y: 640 },
         data: n,
       })),
-    [g],
+    [g, layout],
   );
   const edges: Edge[] = useMemo(
     () =>

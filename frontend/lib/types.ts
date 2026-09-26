@@ -1,15 +1,20 @@
 // Mirrors docs/api-contract.md. Change both together.
 
-export type ScenarioId = "baseline" | "search_query_explosion" | "traffic_spike" | "database_overload";
+// Unique across companies (ShopX ids are unprefixed, RideNow ids start with "ridenow_"); see lib/companies.ts.
+export type ScenarioId = string;
 
 export interface Scenario {
   id: ScenarioId;
   name: string;
   description: string;
+  company: string;
+  company_name: string;
+  baseline: ScenarioId;
 }
 
 export interface Overview {
   scenario: ScenarioId;
+  company: string;
   kpis: {
     current_monthly: number;
     baseline_monthly: number;

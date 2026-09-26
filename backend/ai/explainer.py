@@ -1,8 +1,8 @@
 """AI explanation layer (PRD §35-36, §52).
 
 The engine decides; this module only explains the engine's /incident JSON.
-A deterministic template is always available. If ANTHROPIC_API_KEY is set, an
-LLM rewrites it, but its answer is thrown away (template used instead) when
+A deterministic template is always available. If GROQ_API_KEY (preferred) or
+ANTHROPIC_API_KEY is set, an LLM rewrites it, but its answer is thrown away (template used instead) when
 it errors, takes longer than 8s, or states any number not in the input."""
 import json
 import os
@@ -13,6 +13,8 @@ import httpx
 LLM_URL = "https://api.anthropic.com/v1/messages"
 LLM_MODEL = os.environ.get("CLOUDPULSE_LLM_MODEL", "claude-haiku-4-5-20251001")
 LLM_TIMEOUT_S = 8.0
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = os.environ.get("CLOUDPULSE_GROQ_MODEL", "openai/gpt-oss-120b")
 
 SYSTEM_PROMPT = """You are CloudPulse's incident explanation engine.
 
@@ -108,16 +110,38 @@ def _join(sections):
                         sections["recommendation_explanation"]])
 
 
-def _llm(inc, key):
-    payload = dict(incident=inc["incident"], root_cause=inc["root_cause"], candidates=inc["candidates"][:3],
-                   propagation=[e for e in inc["graph"]["edges"] if e["on_propagation_path"]],
-                   estimated_impact=inc["impact"], recommendations=inc["recommendations"])
+def _call_anthropic(user, key):
     resp = httpx.post(LLM_URL, timeout=LLM_TIMEOUT_S, headers={
         "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
         json=dict(model=LLM_MODEL, max_tokens=800, system=SYSTEM_PROMPT,
-                  messages=[dict(role="user", content=json.dumps(payload))]))
+                  messages=[dict(role="user", content=user)]))
     resp.raise_for_status()
-    text = "".join(b.get("text", "") for b in resp.json()["content"])
+    return "".join(b.get("text", "") for b in resp.json()["content"])
+
+
+def _call_groq(user, key):
+    resp = httpx.post(GROQ_URL, timeout=LLM_TIMEOUT_S, headers={"authorization": f"Bearer {key}"},
+                      json=dict(model=GROQ_MODEL, max_tokens=1500, temperature=0.2, reasoning_effort="low",
+                                response_format={"type": "json_object"},
+                                messages=[dict(role="system", content=SYSTEM_PROMPT),
+                                          dict(role="user", content=user)]))
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"]
+
+
+def _provider():
+    if os.environ.get("GROQ_API_KEY"):
+        return _call_groq, os.environ["GROQ_API_KEY"]
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return _call_anthropic, os.environ["ANTHROPIC_API_KEY"]
+    return None, None
+
+
+def _llm(inc, call, key):
+    payload = dict(incident=inc["incident"], root_cause=inc["root_cause"], candidates=inc["candidates"][:3],
+                   propagation=[e for e in inc["graph"]["edges"] if e["on_propagation_path"]],
+                   estimated_impact=inc["impact"], recommendations=inc["recommendations"])
+    text = call(json.dumps(payload), key)
     out = json.loads(text[text.index("{"):text.rindex("}") + 1])
     keys = ("summary", "root_cause_explanation", "evidence", "recommendation_explanation")
     if not all(k in out for k in keys) or not isinstance(out["evidence"], list):
@@ -131,10 +155,10 @@ def explain(inc):
         s = dict(summary="No active cost incident. Spend is within its normal range.",
                  root_cause_explanation="", evidence=[], recommendation_explanation="")
         return dict(text=s["summary"], source="template", sections=s)
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if key:
+    call, key = _provider()
+    if call:
         try:
-            s = _llm(inc, key)
+            s = _llm(inc, call, key)
             if not unsupported_numbers(_join(s), inc):
                 return dict(text=_join(s), source="llm", sections=s)
         except Exception:  # timeout, HTTP error, bad JSON: the template is the fallback

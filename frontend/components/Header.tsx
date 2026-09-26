@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SCENARIO_NAMES } from "@/lib/format";
+import { companyOf, isBaseline, scenarioName } from "@/lib/companies";
 import { useScenario } from "@/lib/hooks";
 
 function Logo() {
@@ -18,7 +18,7 @@ function Logo() {
 export default function Header() {
   const [scenario] = useScenario();
   const path = usePathname();
-  const incident = scenario !== "baseline";
+  const incident = !isBaseline(scenario);
   const links = [
     { href: `/?scenario=${scenario}`, label: "Overview", active: path === "/" },
     { href: `/incidents/${scenario}`, label: "Incident", active: path.startsWith("/incidents") },
@@ -44,14 +44,14 @@ export default function Header() {
           ))}
         </nav>
         <div className="ml-auto hidden items-center gap-3 text-xs md:flex">
-          <span className="text-slate-500">ShopX, simulated</span>
+          <span className="text-slate-500">{companyOf(scenario).name}, simulated</span>
           <span
             className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 ${
               incident ? "border-rose-800 bg-rose-950/50 text-rose-200" : "border-emerald-800 bg-emerald-950/40 text-emerald-200"
             }`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${incident ? "animate-pulse bg-rose-400" : "bg-emerald-400"}`} />
-            {SCENARIO_NAMES[scenario]}
+            {scenarioName(scenario)}
           </span>
         </div>
       </div>
