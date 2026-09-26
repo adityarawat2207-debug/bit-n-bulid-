@@ -17,7 +17,7 @@
    "historical": 0.0
   },
   "evidence": [
-   "User requests rose x4.42 (20,346 -> 89,990 per minute)",
+   "User requests rose x4.42 (20,346 \u2192 89,990 per minute)",
    "Accounts for 99% of the estimated cost increase through the services it calls",
    "Total calls to cdn rose x4.42",
    "Its change tracks the total cost curve (correlation 0.99)"
@@ -67,7 +67,7 @@
     "temporal": 0.0,
     "dependency": 0.0,
     "metric": 0.0,
-    "cost": 0.06,
+    "cost": 0.07,
     "historical": 0.5
    },
    "why_not": "No meaningful change in its own behaviour or load"
@@ -86,7 +86,7 @@
   },
   {
    "service": "auth-service",
-   "confidence": 0.04,
+   "confidence": 0.05,
    "factors": {
     "temporal": 0.0,
     "dependency": 0.01,
@@ -98,7 +98,7 @@
   },
   {
    "service": "redis",
-   "confidence": 0.01,
+   "confidence": 0.02,
    "factors": {
     "temporal": 0.0,
     "dependency": 0.0,
@@ -110,12 +110,12 @@
   },
   {
    "service": "payment-service",
-   "confidence": 0.0,
+   "confidence": 0.01,
    "factors": {
     "temporal": 0.0,
     "dependency": 0.0,
     "metric": 0.0,
-    "cost": 0.03,
+    "cost": 0.04,
     "historical": 0.0
    },
    "why_not": "No meaningful change in its own behaviour or load"
@@ -187,7 +187,7 @@
     "id": "database",
     "kind": "resource",
     "state": "normal",
-    "change_pct": 0.1
+    "change_pct": 0.2
    },
    {
     "id": "analytics",
@@ -340,14 +340,14 @@
     "target": "database",
     "value": 1.25
    },
-   "savings_monthly": -500,
+   "savings_monthly": -275,
    "latency_pct": -2.5,
    "error_pp": 0.0,
    "db_cpu": 0.348,
    "risk": "medium",
    "verdict": "NOT RECOMMENDED",
    "reasons": [
-    "costs $500/month more instead of saving"
+    "costs $275/month more instead of saving"
    ]
   },
   {
@@ -358,7 +358,7 @@
     "target": "database",
     "value": 0.75
    },
-   "savings_monthly": 500,
+   "savings_monthly": 275,
    "latency_pct": 6.6,
    "error_pp": 0.0,
    "db_cpu": 0.579,
