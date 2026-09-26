@@ -8,3 +8,5 @@ node_modules/
 .env.local
 .DS_Store
 .code-review-graph/
+.playwright-mcp/
+.vercel/
