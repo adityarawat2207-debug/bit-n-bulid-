@@ -46,14 +46,17 @@ frontend builds against (never edit it by hand):
 
 ## Deploy (free tier)
 
-- **Render**: the repo root has `render.yaml`. In Render, choose New → Blueprint
-  and pick this repo. It builds from `backend/` and health-checks `/api/v1/health`.
-- **Railway / Fly**: use `backend/Dockerfile` (it listens on `$PORT`).
+- **Vercel (live)**: the `cloudpulse-api` project, deployed from this folder
+  with `npx vercel deploy --prod`, serves https://cloudpulse-api.vercel.app. Vercel detects FastAPI from
+  `app/main.py` and runs it as a serverless function. `.vercelignore` keeps the
+  venv and tests out of the upload. It is not connected to git, so redeploy
+  after changes.
+- **Fallbacks**: `render.yaml` at the repo root (Render → New → Blueprint), or
+  `backend/Dockerfile` for Railway / Fly (it listens on `$PORT`).
 
-Then point the frontend at it with
-`NEXT_PUBLIC_API_URL=https://<your-api-host>` (no `/api/v1` suffix).
-Free Render instances sleep when idle, so open `/api/v1/health` a minute before
-the demo. If the API is unreachable, the frontend falls back to the mocks.
+Point the frontend at it with
+`NEXT_PUBLIC_API_URL=https://<your-api-host>` (no `/api/v1` suffix). If the API
+is unreachable, the frontend falls back to the mocks.
 
 ## Layout
 

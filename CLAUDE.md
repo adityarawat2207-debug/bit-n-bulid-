@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-The backend (`backend/`) and the frontend (`frontend/`) are both built and working end to end. What remains is deployment, QA on the deployed URLs, and the demo video (see `TASKS.md`). The user builds this alone, so don't split work by teammate. The task plan is `TASKS.md` and the API contract is `docs/api-contract.md`. The product spec is `PRD — Cloud Cost Root-Cause Intelligence Platform.md`, which is the spec for **CloudPulse**, a 24-hour hackathon MVP for the problem "The Cloud Bill Nobody Can Explain". Read the relevant PRD section before building a module. It is numbered, so cite sections as "PRD §N".
+The backend (`backend/`) and the frontend (`frontend/`) are both built and working end to end. Both are deployed on Vercel. End-to-end QA on the deployed URLs has passed; what remains is the demo video (see `TASKS.md`). The user builds this alone, so don't split work by teammate. The task plan is `TASKS.md` and the API contract is `docs/api-contract.md`. The product spec is `PRD — Cloud Cost Root-Cause Intelligence Platform.md`, which is the spec for **CloudPulse**, a 24-hour hackathon MVP for the problem "The Cloud Bill Nobody Can Explain". Read the relevant PRD section before building a module. It is numbered, so cite sections as "PRD §N".
 
 ## Commands
 
@@ -23,7 +23,7 @@ Frontend (run from `frontend/`; Node 20+). It is **Next.js 16**: read `frontend/
 - Lint: `npm run lint`. The React Compiler rules reject synchronous `setState` inside effects; derive state from keys instead (see `useApi` in `lib/hooks.ts`).
 - Build and type-check: `npm run build`. `PageProps`/`LayoutProps` types are generated here, so a bare `tsc` fails before the first build.
 
-Deploy: `render.yaml` (backend, Render free plan) and Vercel for `frontend/` with `NEXT_PUBLIC_API_URL` set; see `README.md`.
+Deploy: both halves are on Vercel. The `cloudpulse-api` project (FastAPI serverless, deployed from `backend/` with `npx vercel deploy --prod`; not git-connected) serves https://cloudpulse-api.vercel.app. The `cloudpulse` project is deployed from `frontend/` with `npx vercel deploy --prod` and has `NEXT_PUBLIC_API_URL` set to that URL. `render.yaml` and `backend/Dockerfile` are fallbacks only; see `README.md`.
 
 ## What the product does
 

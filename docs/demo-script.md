@@ -8,7 +8,7 @@ Wording rules for the presenter, same as the UI: say **"root-cause confidence"**
 
 ## Before you go on stage
 
-- [ ] Open the deployed API's `/api/v1/health` about a minute before. Free Render instances sleep, and the first request can take about 30s.
+- [ ] Open https://cloudpulse-api.vercel.app/api/v1/health about a minute before, so the first demo request isn't a serverless cold start.
 - [ ] Open the app on the dashboard with `?scenario=baseline`.
 - [ ] Have a second tab ready at `/incidents/search_query_explosion` in case a click fails.
 - [ ] If the API is down, the frontend falls back to the mocks automatically. The numbers are identical, and only custom what-if values need the live API.

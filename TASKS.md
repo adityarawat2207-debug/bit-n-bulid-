@@ -5,10 +5,10 @@
 - **B**: dashboard and incident pages
 - **C**: dependency graph, recommendations, and the demo
 
-**Status:** everything that can be built locally is done. What's left:
-1. **A7: deploy.** Create the Render service from `render.yaml` and the Vercel project with root `frontend`. Both need you to log in.
-2. **C6: run the QA path on the deployed URLs.**
-3. **C7: record the video.**
+**Status:** everything is built, deployed and QA'd. What's left:
+1. **C7: record the video.**
+
+Both Vercel projects are deployed from the local tree with `npx vercel deploy --prod` (run in `backend/` or `frontend/`); neither is connected to git, so redeploy after changes.
 
 Tick a box when its **Done when** is true, not when the code merely exists.
 
@@ -79,17 +79,17 @@ Never cut a P0 item (PRD §56).
   - Done when:
     - With no key it returns `source: "template"`.
     - It never states a number that isn't in the incident JSON.
-- [ ] **A7 · H11–13 · Deploy the backend**
+- [x] **A7 · H11–13 · Deploy the backend**
   - Build: deploy to a free tier (Render, Railway or Fly). No paid services (PRD §53).
   - Done when: the public URL serves `/overview?scenario=baseline`.
-  - Prepared: `render.yaml` (Render blueprint, free plan) and `backend/Dockerfile` (Railway/Fly). Remaining: create the service in a free account and set `NEXT_PUBLIC_API_URL` on the frontend.
+  - Done: deployed on Vercel's free plan as the `cloudpulse-api` project (https://cloudpulse-api.vercel.app), deployed with `npx vercel deploy --prod` from `backend/`. Chosen over Render because it doesn't sleep after 15 idle minutes. All 5 endpoints checked live at about 0.4s each. The frontend's `NEXT_PUBLIC_API_URL` points at it. `render.yaml` and `backend/Dockerfile` remain as fallbacks.
 - [x] **A8 · H16–18 · Tune the numbers**
   - Build: adjust the cost coefficients so the Search incident lands at about +35% (PRD §11).
   - Done: the database budget is now mostly I/O-billed (`DB_CAPACITY_COST, DB_IO_COST = 1100, 1700`, same $2,800 total), so DB cost tracks load. Values: search_query_explosion +36.1%, traffic_spike +25.2%, database_overload +27.4% (PRD §11 table: +36%; §33: +28%). Mocks regenerated.
   - Done when: A2's tests still pass and the demo numbers match what the script says.
-- [ ] **A9 · H18–20 · Bug fixes from C6; backend README section**
+- [x] **A9 · H18–20 · Bug fixes from C6; backend README section**
   - Build: fix what C6's bug list turns up, and write the backend part of the README (run, test and deploy commands).
-  - README done: `backend/README.md`. Bug fixes wait on C6.
+  - Done: README in `backend/README.md`. C6 found no app bugs, so nothing needed fixing.
 
 ## Track B: Pages
 
@@ -155,12 +155,14 @@ Never cut a P0 item (PRD §56).
   - Done: 3 cards (savings, latency, reliability, DB CPU, risk, confidence, rejection reasons, before→after cost), plus a live what-if panel (capacity slider, rate-limit, fix edge) that calls `/whatif`.
 - [x] **C5 · H13–16 · `/simulator` page**
   - Build: scenario cards and reset. If time runs out, fold this into the dashboard.
-- [ ] **C6 · H16–20 · End-to-end QA**
+- [x] **C6 · H16–20 · End-to-end QA**
   - Build: run the PRD §54 path for all 3 scenarios, plus a reset, on the deployed URLs. File each bug with its owner's track letter.
   - Done when: 3 clean runs in a row with nobody touching the database or code.
+  - Progress (2026-09-26): 1 clean run on the current deploy in real Chrome. All 3 scenarios plus reset passed on live API data with no mock fallback: root causes search-service 95%, image-service 78%, order-service 86%; +36.1% / +25.2% / +27.4%; 10-node graph; evidence, impact, timeline and template explanation shown; "cut DB 25%" NOT RECOMMENDED / RECOMMENDED / NOT RECOMMENDED. No app bugs found. Then 3 more clean runs in a row with a headless-browser script (each about 50s): every step of all 3 scenarios plus reset passed, with no console errors, every API call live and 200, and no mock fallback.
+  - Gotcha: rapid headless-browser QA trips Vercel's platform bot checkpoint on the frontend domain (`x-vercel-mitigated: challenge`, "Failed to verify your browser"). The app then times out on the API and falls back to mocks. Real browsers pass the checkpoint automatically. Run QA in a real, visible browser tab, since hidden tabs are throttled, or wait for the checkpoint to clear.
 - [ ] **C7 · H20–24 · Submission**
   - Build: the demo script (PRD §58, with judge Q&A from §59), the recorded video, and the top-level README with its architecture diagram.
-  - Demo script and Q&A done: `docs/demo-script.md`. Remaining: the video and the top-level README.
+  - Demo script and Q&A done: `docs/demo-script.md`. Top-level README done, with the architecture diagram and live URLs. Remaining: the video.
 
 ---
 

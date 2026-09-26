@@ -65,9 +65,18 @@ AI explanations are optional. Set `ANTHROPIC_API_KEY` on the backend to enable t
 
 ## Deploy (free tiers)
 
-1. **Backend on Render:** New → Blueprint → select this repo. `render.yaml` configures it. Check `https://<service>.onrender.com/api/v1/overview?scenario=baseline`.
-2. **Frontend on Vercel:** import the repo, set **Root Directory** to `frontend`, and add the env var `NEXT_PUBLIC_API_URL=https://<service>.onrender.com`.
-3. Free Render services sleep after 15 minutes idle. Open the backend URL a minute before the demo to wake it.
+Both halves run on Vercel's free plan as two projects:
+
+| Project | Folder | Live URL |
+|---|---|---|
+| `cloudpulse` (Next.js) | `frontend/` | https://cloudpulse-indol.vercel.app |
+| `cloudpulse-api` (FastAPI, serverless) | `backend/` | https://cloudpulse-api.vercel.app/api/v1/health |
+
+1. **Backend:** the `cloudpulse-api` project is deployed from `backend/` with `npx vercel deploy --prod` (it is not connected to git, so pushes don't redeploy it). Vercel detects FastAPI from `app/main.py`. Check `https://cloudpulse-api.vercel.app/api/v1/overview?scenario=baseline`.
+2. **Frontend:** the `cloudpulse` project has `NEXT_PUBLIC_API_URL=https://cloudpulse-api.vercel.app` and is deployed from `frontend/` with `npx vercel deploy --prod`. The variable is read at build time, so redeploy after changing it.
+3. The backend is stateless and doesn't sleep. The first request after a quiet spell is a cold start of a second or two; warm requests take about 0.4s.
+
+`render.yaml` and `backend/Dockerfile` are kept as a fallback (Render, Railway or Fly) if Vercel is unavailable.
 
 ## API
 
