@@ -23,7 +23,7 @@ Frontend (run from `frontend/`; Node 20+). It is **Next.js 16**: read `frontend/
 - Lint: `npm run lint`. The React Compiler rules reject synchronous `setState` inside effects; derive state from keys instead (see `useApi` in `lib/hooks.ts`).
 - Build and type-check: `npm run build`. `PageProps`/`LayoutProps` types are generated here, so a bare `tsc` fails before the first build.
 
-Deploy: both halves are on Vercel. The `cloudpulse-api` project (FastAPI serverless, deployed from `backend/` with `npx vercel deploy --prod`; not git-connected) serves https://cloudpulse-api.vercel.app. The `cloudpulse` project is deployed from `frontend/` with `npx vercel deploy --prod` and has `NEXT_PUBLIC_API_URL` set to that URL. `render.yaml` and `backend/Dockerfile` are fallbacks only; see `README.md`.
+Deploy: both halves are on Vercel. The `cloudpulse-api` project (FastAPI serverless, deployed from `backend/` with `npx vercel deploy --prod`; not git-connected) serves https://cloudpulse-api.vercel.app. The `cloudpulse` project is deployed from `frontend/` with `npx vercel deploy --prod` and has `NEXT_PUBLIC_API_URL` set to that URL. Every push to the `varun's` branch redeploys both projects via `.github/workflows/deploy.yml` (repo secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID_FRONTEND`, `VERCEL_PROJECT_ID_BACKEND`); the repo and the Vercel account are owned by different people, so Vercel's GitHub integration isn't used. `main` is a teammate's separate codebase. `render.yaml` and `backend/Dockerfile` are fallbacks only; see `README.md`.
 
 ## What the product does
 

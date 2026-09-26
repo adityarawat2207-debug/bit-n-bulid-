@@ -1,0 +1,39 @@
+# Deploys backend/ and frontend/ to the existing Vercel projects on every push
+# to the varun's branch. The repo and the Vercel account belong to different
+# people, so this uses a Vercel token instead of Vercel's GitHub integration.
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: ["varun's"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: backend
+            project: VERCEL_PROJECT_ID_BACKEND
+          - app: frontend
+            project: VERCEL_PROJECT_ID_FRONTEND
+    concurrency:
+      group: vercel-${{ matrix.app }}
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets[matrix.project] }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Deploy ${{ matrix.app }}
+        run: npx --yes vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
