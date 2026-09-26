@@ -85,7 +85,7 @@ export default function SimulatorView() {
       )}
 
       <Card title="What-if: cost vs performance">
-        <WhatIfPanel key={scenario} scenario={scenario} incident={inc} currentMonthly={overview.data?.kpis.current_monthly} />
+        <WhatIfPanel key={`${scenario}:${inc ? "incident" : "none"}`} scenario={scenario} incident={inc} currentMonthly={overview.data?.kpis.current_monthly} />
       </Card>
     </div>
   );
