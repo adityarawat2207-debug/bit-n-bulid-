@@ -5,6 +5,7 @@ import { getIncident, getOverview, getScenarios } from "@/lib/api";
 import { companyOf } from "@/lib/companies";
 import { pct, usd } from "@/lib/format";
 import { useApi, useScenario } from "@/lib/hooks";
+import { CompanySwitch } from "./Dashboard";
 import { WhatIfPanel } from "./Recommendations";
 import { Card, Skeleton, SourceBadge } from "./ui";
 
@@ -26,20 +27,23 @@ export default function SimulatorView() {
         <SourceBadge source={overview.source} />
       </div>
 
+      <CompanySwitch active={scenario} onSelect={setScenario} />
+
       {!scenarios.data ? <Skeleton className="h-40" /> : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {scenarios.data.map((s) => {
+          {scenarios.data.filter((s) => s.company === company.id).map((s) => {
             const active = s.id === scenario;
+            const baseline = s.id === company.baseline;
             return (
               <div key={s.id} className={`flex flex-col rounded-xl border p-4 transition-colors ${
                 active
-                  ? s.id === "baseline" ? "border-emerald-600 bg-emerald-950/25" : "border-rose-600/80 bg-rose-950/25"
+                  ? baseline ? "border-emerald-600 bg-emerald-950/25" : "border-rose-600/80 bg-rose-950/25"
                   : "border-slate-800 bg-slate-900/60"}`}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="font-medium text-white">{s.name}</div>
                   {active && (
-                    <span className={`flex items-center gap-1.5 text-xs ${s.id === "baseline" ? "text-emerald-300" : "text-rose-300"}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${s.id === "baseline" ? "bg-emerald-400" : "animate-pulse bg-rose-400"}`} />
+                    <span className={`flex items-center gap-1.5 text-xs ${baseline ? "text-emerald-300" : "text-rose-300"}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${baseline ? "bg-emerald-400" : "animate-pulse bg-rose-400"}`} />
                       Running
                     </span>
                   )}
@@ -48,13 +52,13 @@ export default function SimulatorView() {
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {!active && (
                     <button onClick={() => setScenario(s.id)}
-                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${s.id === "baseline"
+                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${baseline
                         ? "border border-emerald-700 text-emerald-300 hover:bg-emerald-950"
                         : "bg-slate-100 text-slate-900 hover:bg-white"}`}>
-                      {s.id === "baseline" ? "↺ Reset to baseline" : "Trigger"}
+                      {baseline ? "↺ Reset to baseline" : "Trigger"}
                     </button>
                   )}
-                  {s.id !== "baseline" && (
+                  {!baseline && (
                     <Link href={`/?scenario=${s.id}&replay=1`} className="rounded-lg px-2 py-1.5 text-sm text-sky-300 hover:text-sky-200">
                       Replay on dashboard
                     </Link>
