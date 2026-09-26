@@ -2,10 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getIncident, getOverview, getScenarios } from "@/lib/api";
+import { getIncident, getOverview, getScenarios, resetLive } from "@/lib/api";
 import LivePanel from "./LivePanel";
-import { companyOf, isBaseline, isLive } from "@/lib/companies";
-import { useApi, useScenario, useTick } from "@/lib/hooks";
+import { companyOf, isBaseline, isLive, LIVE_SCENARIO, STORE_URL, watchesStore } from "@/lib/companies";
+import { useApi, useScenario, useStoreSearches, useTick } from "@/lib/hooks";
 import type { ScenarioId } from "@/lib/types";
 import { DailyCostChart, HourlyCostChart } from "./CostCharts";
 import { BreakdownTable, IncidentBanner, KpiCards, ScenarioBar, ServiceTable } from "./Dashboard";
@@ -34,8 +34,11 @@ export default function DashboardView() {
 
   const select = (s: ScenarioId) => {
     if (!isBaseline(s)) setToken((t) => ({ scenario: s, n: (t?.n ?? 0) + 1 }));
-    setScenario(s);
+    // Resetting the live scenario clears the store's telemetry, so the next search starts a fresh incident
+    if (isLive(scenario) && s === companyOf(scenario).baseline) resetLive().catch(() => {}).then(() => setScenario(s));
+    else setScenario(s);
   };
+  useStoreSearches(watchesStore(scenario), () => select(LIVE_SCENARIO));
 
   const o = overview.data;
   const inc = incident.data?.incident ? incident.data : null;
@@ -56,6 +59,15 @@ export default function DashboardView() {
         <ScenarioBar scenarios={scenarios.data} active={scenario} onSelect={select} busy={switching} />
       )}
       {isLive(scenario) && <LivePanel tick={tick} />}
+      {watchesStore(scenario) && (
+        <p className="text-sm text-muted">
+          Watching the{" "}
+          <a href={STORE_URL} target="_blank" rel="noreferrer" className="text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+            ShopX store
+          </a>
+          : a search there opens the live storefront.
+        </p>
+      )}
 
       {overview.error && <ErrorBox message={overview.error} />}
       {!o ? (

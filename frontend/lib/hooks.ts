@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import type { Result, Source } from "./api";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
+import { getLive, type Result, type Source } from "./api";
 import { isScenario } from "./companies";
 import type { ScenarioId } from "./types";
 
@@ -56,4 +56,27 @@ export function useTick(on: boolean, ms = 3000): number {
     return () => clearInterval(id);
   }, [on, ms]);
   return on ? n : 0;
+}
+
+/** Calls `onSearch` when the ShopX store serves a new search while `on` (it polls the telemetry). */
+export function useStoreSearches(on: boolean, onSearch: () => void, ms = 3000) {
+  const fire = useEffectEvent(onSearch);
+  useEffect(() => {
+    if (!on) return;
+    let active = true;
+    let seen: number | null = null;
+    const poll = () =>
+      getLive()
+        .then((s) => {
+          if (active && seen !== null && s.requests_total > seen) fire();
+          seen = s.requests_total;
+        })
+        .catch(() => {}); // no telemetry means nothing to react to
+    poll();
+    const id = setInterval(poll, ms);
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
+  }, [on, ms]);
 }

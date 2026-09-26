@@ -137,8 +137,12 @@ export const scenarioName = (s: ScenarioId) => companyOf(s).scenarios[s]?.name ?
 
 export const isBaseline = (s: ScenarioId) => companyOf(s).baseline === s;
 
-/** Scenarios driven by live telemetry from the ShopX store; the UI polls them. */
-export const isLive = (s: ScenarioId) => s === "shopx_live";
+/** The scenario driven by live telemetry from the ShopX store; the UI polls it. */
+export const LIVE_SCENARIO: ScenarioId = "shopx_live";
+export const isLive = (s: ScenarioId) => s === LIVE_SCENARIO;
+
+/** The live scenario's healthy baseline watches the store: a new search there opens the live scenario. */
+export const watchesStore = (s: ScenarioId) => s === companyOf(LIVE_SCENARIO).baseline;
 
 /** The deployed ShopX store that reports to the live scenario. */
 export const STORE_URL = process.env.NEXT_PUBLIC_STORE_URL ?? "https://shopx-store-kappa.vercel.app";
