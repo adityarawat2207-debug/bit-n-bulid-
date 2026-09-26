@@ -2,17 +2,11 @@
 
 import Link from "next/link";
 import { getIncident, getOverview, getScenarios } from "@/lib/api";
+import { companyOf } from "@/lib/companies";
 import { pct, usd } from "@/lib/format";
 import { useApi, useScenario } from "@/lib/hooks";
 import { WhatIfPanel } from "./Recommendations";
 import { Card, Skeleton, SourceBadge } from "./ui";
-
-const EXPECTED: Record<string, string> = {
-  search_query_explosion: "search-service v2.0 raises database queries per request 1.2 → 4.8, with +20% organic traffic.",
-  traffic_spike: "image-service traffic +340%. Decoy: an unrelated search-service deploy 2h earlier.",
-  database_overload: "order-service v3.0 N+1 bug: queries per request 3 → 10.5. Decoy: search traffic +10%.",
-  baseline: "Normal diurnal traffic. Decoys: slow auth growth and a resolved analytics batch spike on day 15.",
-};
 
 export default function SimulatorView() {
   const [scenario, setScenario] = useScenario();
@@ -20,13 +14,14 @@ export default function SimulatorView() {
   const overview = useApi(() => getOverview(scenario), scenario);
   const incident = useApi(() => getIncident(scenario), scenario);
   const inc = incident.data?.incident ? incident.data : null;
+  const company = companyOf(scenario);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">Incident simulator</h1>
-          <p className="text-sm text-slate-400">Start an incident in the simulated ShopX environment, then test fixes against it.</p>
+          <p className="text-sm text-slate-400">Start an incident in the simulated {company.name} environment, then test fixes against it.</p>
         </div>
         <SourceBadge source={overview.source} />
       </div>
@@ -49,7 +44,7 @@ export default function SimulatorView() {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 flex-1 text-sm text-slate-400">{EXPECTED[s.id] ?? s.description}</p>
+                <p className="mt-1 flex-1 text-sm text-slate-400">{company.scenarios[s.id]?.detail ?? s.description}</p>
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {!active && (
                     <button onClick={() => setScenario(s.id)}
