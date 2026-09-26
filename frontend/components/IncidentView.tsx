@@ -26,7 +26,7 @@ export default function IncidentView({ scenario }: { scenario: ScenarioId }) {
           <span className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-300">✓</span>
           <div className="text-lg text-white">No active incident</div>
           <p className="mt-1 text-sm text-slate-400">Spend is within its normal range for this scenario.</p>
-          <Link href="/simulator" className="mt-5 inline-block rounded-lg border border-slate-700 px-4 py-2 text-sm hover:border-slate-500">
+          <Link href={`/simulator?scenario=${scenario}`} className="mt-5 inline-block rounded-lg border border-slate-700 px-4 py-2 text-sm hover:border-slate-500">
             Trigger an incident in the simulator
           </Link>
         </div>
