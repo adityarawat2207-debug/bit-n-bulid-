@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state
 
-The backend (`backend/`) is built and tested: engine, all 5 endpoints and the explainer. The frontend (`frontend/`) has only the generated mocks in `public/mocks/` so far. The task plan is `TASKS.md` and the API contract is `docs/api-contract.md`. The product spec is `PRD — Cloud Cost Root-Cause Intelligence Platform.md`, which is the spec for **CloudPulse**, a 24-hour hackathon MVP for the problem "The Cloud Bill Nobody Can Explain". Read the relevant PRD section before building a module. It is numbered, so cite sections as "PRD §N".
+The backend (`backend/`) and the frontend (`frontend/`) are both built and working end to end. What remains is deployment, QA on the deployed URLs, and the demo video (see `TASKS.md`). The user builds this alone, so don't split work by teammate. The task plan is `TASKS.md` and the API contract is `docs/api-contract.md`. The product spec is `PRD — Cloud Cost Root-Cause Intelligence Platform.md`, which is the spec for **CloudPulse**, a 24-hour hackathon MVP for the problem "The Cloud Bill Nobody Can Explain". Read the relevant PRD section before building a module. It is numbered, so cite sections as "PRD §N".
 
 ## Commands
 
@@ -15,6 +15,15 @@ Backend (run from `backend/`; Python 3.12+):
 - Test: `.venv/bin/pytest -q`; one test: `.venv/bin/pytest -q tests/test_api.py::test_incident_shape`
 - Regenerate frontend mocks after any engine or contract change: `.venv/bin/python -m scripts.export_mocks`
 - Optional LLM explanations: set `ANTHROPIC_API_KEY` (and optionally `CLOUDPULSE_LLM_MODEL`). Without it the template is used.
+
+Frontend (run from `frontend/`; Node 20+). It is **Next.js 16**: read `frontend/AGENTS.md` and the bundled docs in `node_modules/next/dist/docs/` before using Next APIs. Route `params` are Promises, and components that call `useSearchParams` need a `<Suspense>` boundary.
+
+- Setup: `npm install`
+- Run: `npm run dev` (http://localhost:3000). It calls `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`) and falls back to `public/mocks/` if that fails or takes more than 10s. `NEXT_PUBLIC_MOCK=1` uses only the mocks.
+- Lint: `npm run lint`. The React Compiler rules reject synchronous `setState` inside effects; derive state from keys instead (see `useApi` in `lib/hooks.ts`).
+- Build and type-check: `npm run build`. `PageProps`/`LayoutProps` types are generated here, so a bare `tsc` fails before the first build.
+
+Deploy: `render.yaml` (backend, Render free plan) and Vercel for `frontend/` with `NEXT_PUBLIC_API_URL` set; see `README.md`.
 
 ## What the product does
 
@@ -29,7 +38,7 @@ Work is split into tracks A, B and C in `TASKS.md`. Frontend and backend connect
   - `simulator/`: the ShopX model and the hourly data generator. One `steady_state()` model feeds both the generator and the what-if simulator, so a simulated fix stays consistent with the data the engine analysed.
   - `engine/`: `anomaly` → `root_cause` → `attribution` → `propagation` → `tradeoff`.
   - `ai/explainer.py`: a template explanation, plus an optional LLM call with an 8s timeout. It falls back to the template when there is no API key.
-- **frontend/**: Next.js (App Router) + TypeScript + Tailwind, React Flow and Recharts. There are 3 pages instead of 7: `/` (dashboard + scenario trigger), `/incidents/[id]` and an optional `/simulator`. It builds against `public/mocks/*.json` when `NEXT_PUBLIC_MOCK=1`. The dependency graph uses a hard-coded node layout.
+- **frontend/**: Next.js 16 (App Router) + TypeScript + Tailwind 4, React Flow (`@xyflow/react`) and Recharts. There are 3 pages instead of 7: `/` (dashboard, scenario trigger and cost replay), `/incidents/[id]` (the id is the scenario id) and `/simulator`. The scenario lives in the URL (`?scenario=`, or the path on incident pages; see `useScenario`). Pages are thin server wrappers around client components in `components/`, and all API access goes through `lib/api.ts`. The dependency graph uses a hard-coded node layout in `components/DependencyGraph.tsx`.
 - `backend/engine/pipeline.py` runs the stages in order; `backend/app/views.py` turns engine output into the contract's JSON. Engine modules must not name specific services (a test enforces this for `search-service`); scenario answer keys live only in `simulator/model.py` for tests.
 
 ## Engine design decisions (validated in the prototype)
