@@ -1,0 +1,18 @@
+{
+ "text": "Cloud cost is running 42.1% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is pricing-service (root-cause confidence 89%). Its own behaviour changed, and the extra load spread along pricing-service -> maps-api, pricing-service -> database. The next candidate, maps-api (43%), was ruled out: its load rose x4.22, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to pricing-service: $5,793/month.\n\nSupporting evidence:\n- Calls/request to maps-api rose x5.98 (1.00 \u2192 5.98)\n- Queries/request to database rose x2.51 (0.80 \u2192 2.01)\n- Deployed v4.0 1h before its own behaviour changed\n- Accounts for 98% of the estimated cost increase through the services it calls\n- Total calls to maps-api rose x6.89\n- Total calls to database rose x2.89\n- Its change tracks the total cost curve (correlation 0.99)\n\nRecommended: Fix pricing-service call amplification to maps-api. Estimated saving $5,335/month, latency -22.5%, error rate +0.0pp, risk low. Not recommended: Reduce database capacity 25%, because latency +60% > +10% limit; DB CPU 93% > 85% headroom limit.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 42.1% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is pricing-service (root-cause confidence 89%). Its own behaviour changed, and the extra load spread along pricing-service -> maps-api, pricing-service -> database. The next candidate, maps-api (43%), was ruled out: its load rose x4.22, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to pricing-service: $5,793/month.",
+  "evidence": [
+   "Calls/request to maps-api rose x5.98 (1.00 \u2192 5.98)",
+   "Queries/request to database rose x2.51 (0.80 \u2192 2.01)",
+   "Deployed v4.0 1h before its own behaviour changed",
+   "Accounts for 98% of the estimated cost increase through the services it calls",
+   "Total calls to maps-api rose x6.89",
+   "Total calls to database rose x2.89",
+   "Its change tracks the total cost curve (correlation 0.99)"
+  ],
+  "recommendation_explanation": "Recommended: Fix pricing-service call amplification to maps-api. Estimated saving $5,335/month, latency -22.5%, error rate +0.0pp, risk low. Not recommended: Reduce database capacity 25%, because latency +60% > +10% limit; DB CPU 93% > 85% headroom limit."
+ }
+}
