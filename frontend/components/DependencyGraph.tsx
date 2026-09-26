@@ -1,6 +1,6 @@
 "use client";
 
-import { Handle, MarkerType, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
+import { Background, BackgroundVariant, Handle, MarkerType, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { companyOf } from "@/lib/companies";
@@ -17,7 +17,7 @@ function healthyGraph(scenario: ScenarioId): Graph {
 }
 
 const STATE_STYLE: Record<NodeState, string> = {
-  root: "border-alert bg-alert-soft ring-4 ring-alert/10",
+  root: "border-alert bg-alert-soft ring-1 ring-alert",
   affected: "border-warn-line bg-warn-soft",
   normal: "border-line-strong bg-surface",
 };
@@ -25,7 +25,7 @@ const STATE_LABEL: Record<NodeState, string> = { root: "Likely root cause", affe
 const STATE_TEXT: Record<NodeState, string> = { root: "text-alert", affected: "text-warn", normal: "text-faint" };
 const KIND_LABEL: Record<NodeKind, string> = { ingress: "entry point", service: "service", resource: "resource" };
 
-const ICON_TONE: Record<NodeState, string> = { root: "bg-surface text-alert", affected: "bg-surface text-warn", normal: "bg-sunk text-muted" };
+const ICON_TONE: Record<NodeState, string> = { root: "text-alert", affected: "text-warn", normal: "text-faint" };
 
 /** entry point: arrow into a gate; service: a server box; resource: a data cylinder */
 function KindIcon({ kind }: { kind: NodeKind }) {
@@ -44,21 +44,20 @@ type SvcData = { id: string; kind: NodeKind; state: NodeState; change_pct: numbe
 function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
   const moved = Math.abs(data.change_pct) >= 1;
   return (
-    <div className={`w-[164px] rounded-lg border px-3 py-2 text-left shadow-[0_1px_2px_rgb(20_25_34/0.05)] ${STATE_STYLE[data.state]}`}>
+    <div className={`w-[164px] rounded-md border px-3 py-2 text-left ${STATE_STYLE[data.state]}`}>
       <Handle type="target" position={Position.Top} className="!h-1.5 !w-1.5 !border-0 !bg-line-strong" />
       <div className="flex items-center gap-2">
-        <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md ${ICON_TONE[data.state]}`}>
+        <span className={`flex shrink-0 items-center ${ICON_TONE[data.state]}`}>
           <KindIcon kind={data.kind} />
         </span>
-        <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">{data.id}</span>
-        {data.state === "root" && <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-alert" />}
+        <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-ink">{data.id}</span>
       </div>
       <div className="mt-1.5 flex items-center justify-between text-[11px]">
-        <span className={`font-medium ${STATE_TEXT[data.state]}`}>
+        <span className={STATE_TEXT[data.state]}>
           {data.state === "normal" ? KIND_LABEL[data.kind] : STATE_LABEL[data.state]}
         </span>
         {moved && (
-          <span className={`font-semibold tabular-nums ${data.change_pct > 0 ? "text-alert" : "text-ok"}`} title="Cost change vs baseline">
+          <span className={`font-medium tabular-nums ${data.change_pct > 0 ? "text-alert" : "text-ok"}`} title="Cost change vs baseline">
             {pct(data.change_pct, 0)}
           </span>
         )}
@@ -92,17 +91,16 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
     () =>
       g.edges.map((e) => {
         const hot = e.on_propagation_path;
-        const color = hot ? "#c8321f" : Math.abs(e.calls_change_pct) >= 5 ? "#667085" : "#c3cad3";
+        const color = hot ? "#c3372c" : Math.abs(e.calls_change_pct) >= 5 ? "#8a919c" : "#cfd4db";
         return {
           id: `${e.source}->${e.target}`,
           source: e.source,
           target: e.target,
-          animated: hot,
           className: hot ? "hot" : undefined,
-          labelBgPadding: [5, 3] as [number, number],
-          labelBgBorderRadius: 4,
+          labelBgPadding: [4, 2] as [number, number],
+          labelBgBorderRadius: 3,
           label: Math.abs(e.calls_change_pct) >= 5 ? `${pct(e.calls_change_pct, 0)} calls` : undefined,
-          style: { stroke: color, strokeWidth: hot ? 2 : 1.2 },
+          style: { stroke: color, strokeWidth: hot ? 1.75 : 1 },
           markerEnd: { type: MarkerType.ArrowClosed, color },
           zIndex: hot ? 1 : 0,
         };
@@ -128,7 +126,9 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
         zoomOnPinch={false}
         zoomOnDoubleClick={false}
         preventScrolling={false}
-      />
+      >
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e4e7eb" />
+      </ReactFlow>
     </div>
   );
 }
@@ -136,10 +136,10 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
 export function GraphLegend() {
   return (
     <div className="flex flex-wrap gap-3 text-xs text-muted">
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-alert bg-alert-soft" />Likely root cause</span>
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-warn-line bg-warn-soft" />Impacted</span>
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-line-strong bg-surface" />Healthy</span>
-      <span className="flex items-center gap-1"><i className="h-0 w-4 border-t-2 border-dashed border-alert" />Propagation path</span>
+      <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm border border-alert bg-alert-soft" />Likely root cause</span>
+      <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm border border-warn-line bg-warn-soft" />Impacted</span>
+      <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-sm border border-line-strong bg-surface" />Healthy</span>
+      <span className="flex items-center gap-1.5"><i className="h-0.5 w-4 bg-alert" />Propagation path</span>
       <span className="text-faint">% = cost change</span>
     </div>
   );

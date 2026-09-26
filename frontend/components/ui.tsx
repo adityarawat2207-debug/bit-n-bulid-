@@ -11,7 +11,7 @@ export function Card({ title, right, children, className = "" }: {
     <section className={`rounded-lg border border-line bg-surface p-5 ${className}`}>
       {(title || right) && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          {title && <h2 className="text-[15px] font-semibold text-ink">{title}</h2>}
+          {title && <h2 className="text-sm font-semibold text-ink">{title}</h2>}
           {right}
         </div>
       )}
@@ -21,7 +21,7 @@ export function Card({ title, right, children, className = "" }: {
 }
 
 export function Skeleton({ className = "h-40" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-sunk ${className}`} />;
+  return <div className={`animate-pulse rounded-lg border border-line bg-surface ${className}`} />;
 }
 
 export function ErrorBox({ message }: { message: string }) {
@@ -37,7 +37,7 @@ export function SourceBadge({ source }: { source: Source | null }) {
   return (
     <span
       title="The backend is unreachable, so saved responses are shown."
-      className="rounded-md border border-warn-line bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn"
+      className="rounded border border-warn-line bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn"
     >
       Offline data
     </span>
@@ -46,29 +46,33 @@ export function SourceBadge({ source }: { source: Source | null }) {
 
 const VERDICT = {
   RECOMMENDED: "bg-ok-soft text-ok",
-  "NOT RECOMMENDED": "bg-alert-soft text-alert",
+  "NOT RECOMMENDED": "bg-sunk text-muted",
 };
 export function Verdict({ verdict }: { verdict: keyof typeof VERDICT }) {
   return (
-    <span className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${VERDICT[verdict]}`}>
+    <span className={`shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${VERDICT[verdict]}`}>
       {verdict === "RECOMMENDED" ? "Recommended" : "Not recommended"}
     </span>
   );
 }
 
 const LEVEL = {
-  low: "bg-ok-soft text-ok",
-  medium: "bg-warn-soft text-warn",
-  high: "bg-alert-soft text-alert",
+  low: "text-ok",
+  medium: "text-warn",
+  high: "text-alert",
 };
 export function Level({ level, label }: { level: keyof typeof LEVEL; label: string }) {
-  return <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${LEVEL[level]}`}>{label}: {level}</span>;
+  return (
+    <span className="rounded bg-sunk px-1.5 py-0.5 text-xs text-muted">
+      {label} <span className={`font-medium ${LEVEL[level]}`}>{level}</span>
+    </span>
+  );
 }
 
 export function Bar({ value, className = "bg-brand" }: { value: number; className?: string }) {
   return (
-    <div className="h-1.5 w-full rounded-full bg-sunk">
-      <div className={`h-1.5 rounded-full ${className}`} style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
+    <div className="h-1 w-full rounded-full bg-sunk">
+      <div className={`h-1 rounded-full ${className}`} style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
     </div>
   );
 }

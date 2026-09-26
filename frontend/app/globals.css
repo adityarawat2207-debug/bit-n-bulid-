@@ -1,56 +1,57 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-plex-sans);
-  --font-figure: var(--font-plex-condensed);
+  --font-sans: var(--font-plex);
 }
 
-/* Light, cool "instrument" palette. Red is reserved for anomalies and the
-   root cause; petrol is the brand and the cost line. */
+/* Quiet, light instrument. Neutral greys carry the layout; one blue marks
+   interaction, and red is reserved for anomalies and the likely root cause. */
 @theme {
-  --color-canvas: #f4f6f8;
+  --color-canvas: #f6f7f9;
   --color-surface: #ffffff;
-  --color-sunk: #eef1f4;
-  --color-ink: #141922;
-  --color-ink-2: #3a4252;
-  --color-muted: #667085;
-  --color-faint: #98a2b3;
-  --color-line: #e3e7ec;
-  --color-line-strong: #cdd3db;
+  --color-raised: #ffffff;
+  --color-sunk: #eef0f3;
+  --color-ink: #1a1d23;
+  --color-ink-2: #3d434f;
+  --color-muted: #646b78;
+  --color-faint: #8a919c;
+  --color-line: #e4e7eb;
+  --color-line-strong: #cfd4db;
 
-  --color-brand: #0a6c7c;
-  --color-brand-soft: #e4f1f3;
+  --color-brand: #2456c8;
+  --color-brand-soft: #edf2fc;
 
-  --color-alert: #c8321f;
-  --color-alert-soft: #fdeeeb;
-  --color-alert-line: #f1c4bc;
+  --color-alert: #c3372c;
+  --color-alert-soft: #fcf1f0;
+  --color-alert-line: #efc5c0;
 
-  --color-warn: #a96400;
-  --color-warn-soft: #fff5e3;
-  --color-warn-line: #efd29c;
+  --color-warn: #9a6210;
+  --color-warn-soft: #fcf5e8;
+  --color-warn-line: #ecd6a8;
 
-  --color-ok: #1b7f4f;
-  --color-ok-soft: #e7f4ed;
-  --color-ok-line: #b9dfca;
+  --color-ok: #1b7a4b;
+  --color-ok-soft: #edf7f1;
+  --color-ok-line: #c2e1cf;
 }
 
 :root {
   color-scheme: light;
 }
 
+html,
 body {
-  background: var(--color-canvas);
+  background-color: var(--color-canvas);
   color: var(--color-ink);
 }
 
 ::selection {
-  background: #cfe6ea;
+  background: rgb(36 86 200 / 0.18);
 }
 
 :focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 input[type="range"] {
@@ -68,7 +69,7 @@ input[type="range"] {
   }
 }
 
-/* React Flow on a white card. The library stylesheet loads after this
+/* React Flow on a white panel. The library stylesheet loads after this
    file, so these selectors are scoped under .cp-graph to win on specificity. */
 .cp-graph .react-flow__attribution {
   background: transparent;
@@ -78,20 +79,18 @@ input[type="range"] {
   color: var(--color-faint);
 }
 .cp-graph .react-flow__edge-textbg {
-  fill: #ffffff;
-  stroke: var(--color-line-strong);
-  stroke-width: 1;
+  fill: var(--color-surface);
 }
 .cp-graph .react-flow__edge-text {
-  fill: var(--color-ink-2);
+  fill: var(--color-muted);
   font-size: 10px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
-.cp-graph .react-flow__edge.hot .react-flow__edge-textbg {
-  fill: var(--color-alert-soft);
-  stroke: var(--color-alert-line);
-}
 .cp-graph .react-flow__edge.hot .react-flow__edge-text {
   fill: var(--color-alert);
+  font-weight: 600;
+}
+.cp-graph .react-flow__handle {
+  opacity: 0;
 }

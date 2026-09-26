@@ -44,8 +44,8 @@ export default function DashboardView() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-[28px] font-semibold tracking-tight text-ink">{companyOf(scenario).name} cloud spend</h1>
-          <p className="mt-1 text-[15px] text-muted">
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">{companyOf(scenario).name} cloud spend</h1>
+          <p className="mt-1 text-sm text-muted">
             {scenarios.data?.find((s) => s.id === scenario)?.description ?? "Last 30 days of simulated spend"}
           </p>
         </div>
@@ -78,12 +78,12 @@ export default function DashboardView() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             <Card title="Daily spend, last 30 days" right={
-              <span className="flex items-center gap-1.5 text-xs text-muted"><i className="h-2.5 w-2.5 rounded-sm bg-alert" />Anomalous day</span>
+              <span className="flex items-center gap-1.5 text-xs text-muted"><i className="h-2 w-2 rounded-sm bg-alert" />Anomalous day</span>
             }>
               <DailyCostChart daily={o.daily} height={280} />
             </Card>
             <Card title="Monthly cost by resource" right={
-              <span className="flex items-center gap-1.5 text-xs text-muted"><i className="h-2.5 w-0.5 rounded bg-ink/60" />Normal level</span>
+              <span className="flex items-center gap-1.5 text-xs text-muted"><i className="h-2.5 w-px bg-ink" />Normal level</span>
             }>
               <BreakdownTable rows={o.breakdown} />
             </Card>

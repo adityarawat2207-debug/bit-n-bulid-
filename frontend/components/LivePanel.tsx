@@ -5,7 +5,7 @@ import { useApi } from "@/lib/hooks";
 import { useState } from "react";
 import { STORE_URL } from "@/lib/companies";
 
-const BUTTON = "rounded-md border border-line-strong px-3 py-1 text-xs font-medium text-ink-2 hover:border-ink/40 hover:text-ink";
+const BUTTON = "rounded-md border border-line-strong bg-surface px-2.5 py-1 text-xs text-ink-2 hover:border-faint hover:text-ink";
 
 /** Live telemetry from the connected ShopX store (backend app/live.py). */
 export default function LivePanel({ tick }: { tick: number }) {
@@ -17,8 +17,8 @@ export default function LivePanel({ tick }: { tick: number }) {
 
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-line bg-surface px-5 py-3 text-sm">
-      <span className="flex items-center gap-2 font-semibold text-ink">
-        <span className={`h-2 w-2 rounded-full ${s ? "animate-pulse bg-ok" : "bg-line-strong"}`} />
+      <span className="flex items-center gap-2 font-medium text-ink">
+        <span className={`h-1.5 w-1.5 rounded-full ${s ? "bg-ok" : "bg-line-strong"}`} />
         {s ? "Connected: ShopX store" : live.error ? "Store telemetry unavailable" : "Connecting…"}
       </span>
       {s && (

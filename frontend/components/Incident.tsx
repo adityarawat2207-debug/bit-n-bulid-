@@ -30,7 +30,7 @@ export function CausalChain({ inc }: { inc: IncidentDetail }) {
   const steps: { name: string; dot: string; value: ReactNode; detail: ReactNode }[] = [
     {
       name: "What changed",
-      dot: "bg-brand",
+      dot: "bg-ink",
       value: trigger ? <EventText e={trigger} /> : "No change event recorded",
       detail: trigger ? `${time(trigger.t)} UTC` : null,
     },
@@ -49,7 +49,7 @@ export function CausalChain({ inc }: { inc: IncidentDetail }) {
     {
       name: "Estimated impact",
       dot: "bg-alert",
-      value: <span className="font-figure text-2xl font-semibold tabular-nums text-ink">+{usd(inc.impact.total_monthly)}/mo</span>,
+      value: <span className="font-semibold tabular-nums text-ink">+{usd(inc.impact.total_monthly)}/mo</span>,
       detail: `Total cost ${pct(inc.incident.cost_change_pct)} vs baseline`,
     },
     {
@@ -57,7 +57,7 @@ export function CausalChain({ inc }: { inc: IncidentDetail }) {
       dot: fix ? "bg-ok" : "bg-faint",
       value: fix ? fix.title : "No fix passes the safety limits",
       detail: fix ? (
-        <span>Saves <b className="font-semibold text-ok">{usd(fix.savings_monthly)}/mo</b> within latency and error limits</span>
+        <span>Saves <b className="font-medium text-ok">{usd(fix.savings_monthly)}/mo</b> within latency and error limits</span>
       ) : "Compare the simulated options below",
     },
   ];
@@ -66,12 +66,12 @@ export function CausalChain({ inc }: { inc: IncidentDetail }) {
     <ol className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
       {steps.map((s, i) => (
         <li key={s.name} className={`relative flex flex-col bg-surface px-5 py-4 ${i === 4 ? "sm:col-span-2 lg:col-span-1" : ""}`}>
-          <div className="flex items-center gap-2 text-[13px] font-medium text-muted">
-            <span className={`h-2 w-2 rounded-full ${s.dot}`} />
+          <div className="flex items-center gap-2 text-xs text-muted">
+            <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
             {s.name}
           </div>
-          <div className="mt-2 text-[15px] leading-snug text-ink-2">{s.value}</div>
-          {s.detail && <div className="mt-1.5 text-[13px] leading-snug text-muted">{s.detail}</div>}
+          <div className="mt-2 text-sm leading-snug text-ink-2">{s.value}</div>
+          {s.detail && <div className="mt-1 text-xs leading-snug text-muted">{s.detail}</div>}
           {i < steps.length - 1 && (
             <span aria-hidden className="absolute top-1/2 -right-[9px] z-10 hidden h-[18px] w-[18px] -translate-y-1/2 items-center justify-center rounded-full border border-line bg-surface text-faint lg:flex">
               <svg viewBox="0 0 12 12" className="h-2.5 w-2.5"><path d="M4.5 2.5 8 6l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -104,7 +104,7 @@ export function FactorBars({ factors, compact = false }: { factors: Factors; com
               <span className="font-medium tabular-nums text-ink">{factors[f.key].toFixed(2)}</span>
             </div>
           )}
-          <Bar value={factors[f.key]} className={compact ? "bg-faint" : "bg-ink-2"} />
+          <Bar value={factors[f.key]} className={compact ? "bg-faint" : "bg-muted"} />
           {compact && <div className="mt-0.5 truncate text-[10px] text-faint">{f.key}</div>}
         </div>
       ))}
@@ -117,25 +117,25 @@ export function RootCause({ rc }: { rc: IncidentDetail["root_cause"] }) {
     <div className="grid gap-5 md:grid-cols-2">
       <div>
         <div className="text-sm text-muted">Likely root cause</div>
-        <div className="mt-0.5 flex items-center gap-2 text-2xl font-semibold tracking-tight text-alert">
-          <span className="h-2.5 w-2.5 rounded-full bg-alert ring-4 ring-alert-soft" />
+        <div className="mt-0.5 flex items-center gap-2 text-xl font-semibold tracking-tight text-alert">
+          <span className="h-2 w-2 rounded-full bg-alert" />
           {rc.service}
         </div>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="font-figure text-6xl font-semibold leading-none tracking-tight tabular-nums text-ink">{confidence(rc.confidence)}</span>
+        <div className="mt-4 flex items-baseline gap-2">
+          <span className="text-5xl font-medium leading-none tracking-tight tabular-nums text-ink">{confidence(rc.confidence)}</span>
           <span className="text-sm text-muted">root-cause confidence</span>
         </div>
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-3 max-w-sm text-xs text-faint">
           Weighted score of five signals (PRD §23). It ranks candidates; it is not a probability.
         </p>
       </div>
       <FactorBars factors={rc.factors} />
       <div className="border-t border-line pt-4 md:col-span-2">
-        <div className="mb-2 text-sm font-semibold text-ink">Supporting evidence</div>
+        <div className="mb-2 text-sm font-medium text-ink">Supporting evidence</div>
         <ul className="grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
           {rc.evidence.map((e) => (
             <li key={e} className="flex gap-2">
-              <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-alert" />
+              <span className="mt-[8px] h-1 w-1 shrink-0 rounded-full bg-faint" />
               <span className="text-ink-2">{e}</span>
             </li>
           ))}
@@ -159,7 +159,7 @@ export function Candidates({ candidates }: { candidates: IncidentDetail["candida
             <Bar value={c.confidence} className="bg-faint" />
           </div>
           <p className="text-xs text-muted">
-            <span className="font-medium text-ink-2">Ruled out: </span>
+            <span className="text-ink-2">Ruled out: </span>
             {c.why_not}
           </p>
         </li>
@@ -174,10 +174,10 @@ export function Candidates({ candidates }: { candidates: IncidentDetail["candida
 }
 
 function dotColor(label: string, service: string | null) {
-  if (label.includes("deployed")) return "bg-brand";
+  if (label.includes("deployed")) return "bg-ink";
   if (!service) return "bg-alert";
   if (label.includes("load")) return "bg-warn";
-  return "bg-alert/70";
+  return "bg-alert";
 }
 
 export function Timeline({ events }: { events: IncidentDetail["timeline"] }) {
@@ -189,10 +189,10 @@ export function Timeline({ events }: { events: IncidentDetail["timeline"] }) {
     else groups.push({ t: e.t, items: [e] });
   }
   return (
-    <ol className="relative ml-1.5 border-l border-line-strong">
+    <ol className="relative ml-1.5 border-l border-line">
       {groups.map((g) => (
         <li key={g.t} className="mb-5 ml-5 last:mb-0">
-          <span className={`absolute -left-[5px] mt-1 h-2.5 w-2.5 rounded-full ring-4 ring-surface ${dotColor(g.items[0].label, g.items[0].service)}`} />
+          <span className={`absolute -left-[4px] mt-1.5 h-2 w-2 rounded-full ring-4 ring-surface ${dotColor(g.items[0].label, g.items[0].service)}`} />
           <time className="text-xs tabular-nums text-muted">{time(g.t)} UTC</time>
           <ul className="mt-1 space-y-1">
             {g.items.map((e, i) => (
@@ -208,14 +208,15 @@ export function Timeline({ events }: { events: IncidentDetail["timeline"] }) {
   );
 }
 
-const LANDED_COLORS = ["bg-alert", "bg-warn", "bg-brand", "bg-[#6b5bd2]", "bg-ok", "bg-faint"];
+// one hue in steps, darkest for the largest share
+const LANDED_COLORS = ["bg-[#1a1d23]", "bg-[#4a515e]", "bg-[#7b828e]", "bg-[#a9afb8]", "bg-[#cfd4db]", "bg-[#e4e7eb]"];
 
 export function Impact({ impact }: { impact: IncidentDetail["impact"] }) {
   return (
     <div className="space-y-4">
       <div>
-        <div className="font-figure text-4xl font-semibold tracking-tight tabular-nums text-ink">{usd(impact.total_monthly)}<span className="font-sans text-base font-normal text-muted">/mo</span></div>
-        <div className="mt-1 text-xs text-muted">Estimated impact from a contribution model, not provider billing data.</div>
+        <div className="text-4xl font-medium tracking-tight tabular-nums text-ink">{usd(impact.total_monthly)}<span className="text-base font-normal text-muted">/mo</span></div>
+        <div className="mt-1 text-xs text-faint">Estimated impact from a contribution model, not provider billing data.</div>
       </div>
       {impact.by_cause.map((c) => (
         <div key={c.service}>
@@ -223,7 +224,7 @@ export function Impact({ impact }: { impact: IncidentDetail["impact"] }) {
             <span className="text-ink-2">Traced to <b className="font-semibold text-ink">{c.service}</b></span>
             <span className="font-medium tabular-nums text-ink">{usd(c.amount)}/mo</span>
           </div>
-          <div className="flex h-2.5 gap-px overflow-hidden rounded-full bg-sunk">
+          <div className="flex h-2 gap-px overflow-hidden rounded-sm bg-sunk">
             {c.landed.map((l, i) => (
               <div key={l.service} className={LANDED_COLORS[i % LANDED_COLORS.length]}
                 style={{ width: `${(100 * l.amount) / c.amount}%` }} title={`${l.service}: ${usd(l.amount)}`} />

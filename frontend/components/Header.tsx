@@ -6,11 +6,11 @@ import { companyOf, isBaseline, scenarioName } from "@/lib/companies";
 import { useScenario } from "@/lib/hooks";
 
 function Logo() {
-  // a cost line that spikes: the thing CloudPulse explains
+  // a cost line with one spike: the thing CloudPulse explains
   return (
-    <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden>
-      <rect width="24" height="24" rx="6" className="fill-brand" />
-      <path d="M4 14h3.5l2-4 3 7.5 3-11 2 7.5H20" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
+      <rect width="24" height="24" rx="5" className="fill-ink" />
+      <path d="M5 14h3l2-4 3 7 2.5-9 1.5 6H19" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -25,11 +25,11 @@ export default function Header() {
     { href: `/simulator?scenario=${scenario}`, label: "Simulator", active: path === "/simulator" },
   ];
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-surface/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-7xl items-stretch gap-4 px-4 sm:gap-8 sm:px-6">
-        <Link href={`/?scenario=${scenario}`} className="flex items-center gap-2.5">
+        <Link href={`/?scenario=${scenario}`} className="flex items-center gap-2">
           <Logo />
-          <span className="text-[17px] font-semibold tracking-tight text-ink">CloudPulse</span>
+          <span className="text-[15px] font-semibold text-ink">CloudPulse</span>
         </Link>
         <nav className="flex gap-1 text-sm sm:gap-5">
           {links.map((l) => (
@@ -37,22 +37,19 @@ export default function Header() {
               key={l.label}
               href={l.href}
               aria-current={l.active ? "page" : undefined}
-              className={`-mb-px flex items-center border-b-2 px-1.5 font-medium transition-colors ${
-                l.active ? "border-brand text-ink" : "border-transparent text-muted hover:text-ink"
+              className={`-mb-px flex items-center border-b-2 px-1 transition-colors ${
+                l.active ? "border-ink font-medium text-ink" : "border-transparent text-muted hover:text-ink"
               }`}
             >
               {l.label}
             </Link>
           ))}
         </nav>
-        <div className="ml-auto hidden items-center gap-3 text-sm md:flex">
-          <span className="text-muted">{companyOf(scenario).name} (simulated)</span>
-          <span
-            className={`flex items-center gap-2 rounded-md px-2.5 py-1 font-medium ${
-              incident ? "bg-alert-soft text-alert" : "bg-ok-soft text-ok"
-            }`}
-          >
-            <span className={`h-2 w-2 rounded-full ${incident ? "animate-pulse bg-alert" : "bg-ok"}`} />
+        <div className="ml-auto hidden items-center gap-2 text-sm md:flex">
+          <span className="text-muted">{companyOf(scenario).name}, simulated</span>
+          <span className="text-line-strong">/</span>
+          <span className={`flex items-center gap-1.5 font-medium ${incident ? "text-alert" : "text-ink-2"}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${incident ? "bg-alert" : "bg-ok"}`} />
             {scenarioName(scenario)}
           </span>
         </div>

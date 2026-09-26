@@ -30,11 +30,10 @@ export default function IncidentView({ scenario }: { scenario: ScenarioId }) {
     );
   }
   if (!incident.data.incident) {
-    const cta = "mt-5 inline-block rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-2";
+    const cta = "mt-5 inline-block rounded-md bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-2";
     return (
       <Card>
         <div className="py-12 text-center">
-          <span className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-ok-soft text-ok">✓</span>
           <div className="text-lg font-semibold text-ink">No active incident</div>
           {isLive(scenario) ? (
             <>
@@ -62,7 +61,7 @@ export default function IncidentView({ scenario }: { scenario: ScenarioId }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link href={`/?scenario=${scenario}`} className="text-sm text-muted hover:text-ink">← Overview</Link>
-          <h1 className="mt-1 text-[28px] font-semibold tracking-tight text-ink">{name}</h1>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink">{name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
             <Level level={i.severity} label="Severity" />
             <span>Began {time(i.onset_at)} UTC</span>
