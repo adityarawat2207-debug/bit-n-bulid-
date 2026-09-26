@@ -3,6 +3,9 @@
 import { getLive, resetLive, type LiveStatus } from "@/lib/api";
 import { useApi } from "@/lib/hooks";
 import { useState } from "react";
+import { STORE_URL } from "@/lib/companies";
+
+const BUTTON = "rounded-md border border-line-strong px-3 py-1 text-xs font-medium text-ink-2 hover:border-ink/40 hover:text-ink";
 
 /** Live telemetry from the connected ShopX store (backend app/live.py). */
 export default function LivePanel({ tick }: { tick: number }) {
@@ -34,12 +37,12 @@ export default function LivePanel({ tick }: { tick: number }) {
           )}
         </>
       )}
-      <button
-        onClick={() => resetLive().finally(() => setResets((n) => n + 1))}
-        className="ml-auto rounded-md border border-line-strong px-3 py-1 text-xs font-medium text-ink-2 hover:border-ink/40 hover:text-ink"
-      >
-        Clear telemetry
-      </button>
+      <span className="ml-auto flex gap-2">
+        <a href={STORE_URL} target="_blank" rel="noreferrer" className={BUTTON}>Open store ↗</a>
+        <button onClick={() => resetLive().finally(() => setResets((n) => n + 1))} className={BUTTON}>
+          Clear telemetry
+        </button>
+      </span>
     </div>
   );
 }

@@ -65,16 +65,18 @@ AI explanations are optional. Set `ANTHROPIC_API_KEY` on the backend to enable t
 
 ## Deploy (free tiers)
 
-Both halves run on Vercel's free plan as two projects:
+Everything runs on Vercel's free plan as three projects. Every push to the `varun's` branch redeploys all three through `.github/workflows/deploy.yml`:
 
 | Project | Folder | Live URL |
 |---|---|---|
 | `cloudpulse` (Next.js) | `frontend/` | https://cloudpulse-indol.vercel.app |
 | `cloudpulse-api` (FastAPI, serverless) | `backend/` | https://cloudpulse-api.vercel.app/api/v1/health |
+| `shopx-store` (FastAPI, serverless) | `store/` | https://shopx-store-kappa.vercel.app |
 
-1. **Backend:** the `cloudpulse-api` project is deployed from `backend/` with `npx vercel deploy --prod` (it is not connected to git, so pushes don't redeploy it). Vercel detects FastAPI from `app/main.py`. Check `https://cloudpulse-api.vercel.app/api/v1/overview?scenario=baseline`.
+1. **Backend:** the `cloudpulse-api` project is deployed from `backend/` with `npx vercel deploy --prod` (Vercel's git integration isn't used; the workflow above deploys it). Vercel detects FastAPI from `app/main.py`. Check `https://cloudpulse-api.vercel.app/api/v1/overview?scenario=baseline`.
 2. **Frontend:** the `cloudpulse` project has `NEXT_PUBLIC_API_URL=https://cloudpulse-api.vercel.app` and is deployed from `frontend/` with `npx vercel deploy --prod`. The variable is read at build time, so redeploy after changing it.
-3. The backend is stateless and doesn't sleep. The first request after a quiet spell is a cold start of a second or two; warm requests take about 0.4s.
+3. **Store:** the `shopx-store` project has `CLOUDPULSE_URL=https://cloudpulse-api.vercel.app`. The backend keeps the store's telemetry in a Supabase table (`SUPABASE_URL`, `SUPABASE_KEY`; schema in `docs/live-telemetry.sql`), because serverless instances share no memory. A daily Vercel cron (`backend/vercel.json`) reads `/api/v1/live` so the free Supabase project never pauses for inactivity.
+4. The backend is stateless and doesn't sleep. The first request after a quiet spell is a cold start of a second or two; warm requests take about 0.4s.
 
 `render.yaml` and `backend/Dockerfile` are kept as a fallback (Render, Railway or Fly) if Vercel is unavailable.
 
@@ -89,6 +91,12 @@ Stateless: every call names a scenario, and the backend regenerates and reanalys
 | `GET /api/v1/incident?scenario=` | root cause, candidates with reasons, graph, timeline, impact, 3 recommendations |
 | `POST /api/v1/whatif` | simulate one action: `fix_amplification`, `rate_limit` or `reduce_capacity` |
 | `POST /api/v1/explain` | natural-language explanation (`source`: `llm` or `template`) |
+
+## Live storefront
+
+`store/` is a real, small ShopX shop (FastAPI + SQLite). Its search-service v2.0 has an N+1 query bug: it fetches the matching ids, then loads each product with its own query. Every request reports the queries it really ran to `POST /api/v1/telemetry`. The **Live storefront** scenario turns the latest 50 searches into the search → database queries-per-request ratio and replays it at ShopX's production volume, so the engine analyses real behaviour.
+
+To try it: open the store, search for anything (for example "running shoes"), then open the dashboard's Live storefront scenario. Within a few seconds it shows the cost anomaly with search-service as the likely root cause. "Clear telemetry" on the dashboard resets it for everyone. Run the store locally with `store/run.sh` (port 8100, reports to `http://localhost:8000`).
 
 ## Demo
 

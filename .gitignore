@@ -10,3 +10,4 @@ node_modules/
 .code-review-graph/
 .playwright-mcp/
 .vercel/
+store/shopx.db

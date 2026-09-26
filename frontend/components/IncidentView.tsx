@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { getIncident, getOverview, getScenarios } from "@/lib/api";
 import { time } from "@/lib/format";
-import { isLive } from "@/lib/companies";
+import { isLive, STORE_URL } from "@/lib/companies";
 import { useApi, useTick } from "@/lib/hooks";
 import type { ScenarioId } from "@/lib/types";
 import AiPanel from "./AiPanel";
@@ -30,15 +30,25 @@ export default function IncidentView({ scenario }: { scenario: ScenarioId }) {
     );
   }
   if (!incident.data.incident) {
+    const cta = "mt-5 inline-block rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-2";
     return (
       <Card>
         <div className="py-12 text-center">
           <span className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-ok-soft text-ok">✓</span>
           <div className="text-lg font-semibold text-ink">No active incident</div>
-          <p className="mt-1 text-sm text-muted">Spend is within its normal range for this scenario.</p>
-          <Link href={`/simulator?scenario=${scenario}`} className="mt-5 inline-block rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-2">
-            Trigger an incident in the simulator
-          </Link>
+          {isLive(scenario) ? (
+            <>
+              <p className="mt-1 text-sm text-muted">
+                The store&apos;s recent searches look normal. Search the ShopX store and this page picks up its requests within seconds.
+              </p>
+              <a href={STORE_URL} target="_blank" rel="noreferrer" className={cta}>Open the ShopX store ↗</a>
+            </>
+          ) : (
+            <>
+              <p className="mt-1 text-sm text-muted">Spend is within its normal range for this scenario.</p>
+              <Link href={`/simulator?scenario=${scenario}`} className={cta}>Trigger an incident in the simulator</Link>
+            </>
+          )}
         </div>
       </Card>
     );

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShopX — Everything you need</title>
+<style>
+  :root { --bg:#fafaf7; --ink:#111; --muted:#6b6b6b; --line:#e7e5df; --accent:#ff5a1f; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: ui-sans-serif, -apple-system, "Segoe UI", Inter, sans-serif; background:var(--bg); color:var(--ink); }
+  header { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); }
+  .bar { max-width:1180px; margin:auto; display:flex; gap:20px; align-items:center; padding:14px 20px; }
+  .logo { font-weight:800; font-size:24px; letter-spacing:-.5px; }
+  .logo b { color:var(--accent); }
+  form { flex:1; display:flex; }
+  input { flex:1; font-size:16px; padding:12px 16px; border:2px solid var(--ink); border-right:0; border-radius:10px 0 0 10px; outline:none; }
+  button.go { padding:0 22px; font-size:16px; font-weight:600; border:2px solid var(--ink); background:var(--ink); color:#fff; border-radius:0 10px 10px 0; cursor:pointer; }
+  .cart { font-size:15px; white-space:nowrap; }
+  .cart span { background:var(--accent); color:#fff; border-radius:99px; padding:1px 8px; margin-left:4px; font-size:13px; }
+  nav { max-width:1180px; margin:auto; padding:0 20px 10px; display:flex; gap:18px; font-size:14px; color:var(--muted); }
+  nav a { cursor:pointer; } nav a:hover { color:var(--ink); }
+  main { max-width:1180px; margin:auto; padding:24px 20px 60px; }
+  .hero { border-radius:18px; padding:48px 40px; background:linear-gradient(120deg,#111 0%,#2b2b2b 60%,#ff5a1f 140%); color:#fff; margin-bottom:28px; }
+  .hero h1 { margin:0 0 8px; font-size:40px; letter-spacing:-1px; }
+  .hero p { margin:0; color:#ddd; font-size:17px; }
+  .status { color:var(--muted); font-size:14px; margin:0 0 16px; min-height:20px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
+  .img { height:150px; display:flex; align-items:center; justify-content:center; font-size:64px; background:#f1efe9; }
+  .body { padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .brand { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; }
+  .name { font-weight:600; }
+  .row { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:8px; }
+  .price { font-weight:700; font-size:17px; }
+  .rating { font-size:13px; color:#b7791f; }
+  .add { border:1px solid var(--ink); background:#fff; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:13px; }
+  .add:hover { background:var(--ink); color:#fff; }
+  .out { color:#b91c1c; font-size:12px; }
+  .add:disabled { opacity:.6; cursor:default; background:#fff; color:var(--ink); }
+  .demo { background:#111; color:#ddd; font-size:13px; text-align:center; padding:8px 20px; }
+  .demo a { color:#fff; font-weight:600; }
+  footer { text-align:center; color:var(--muted); font-size:13px; padding:30px; border-top:1px solid var(--line); }
+  @media (max-width:640px){ .bar{flex-wrap:wrap} .hero{padding:32px 22px} .hero h1{font-size:30px} }
+</style>
+</head>
+<body>
+<div class="demo">Demo store monitored by CloudPulse. Search for anything, then
+  <a href="https://cloudpulse-indol.vercel.app/?scenario=shopx_live" target="_blank" rel="noreferrer">open the live cost analysis →</a></div>
+<header>
+  <div class="bar">
+    <div class="logo">Shop<b>X</b></div>
+    <form id="f"><input id="q" maxlength="60" placeholder="Search for shoes, watches, bags…" autocomplete="off"><button class="go">Search</button></form>
+    <div class="cart">🛒 Cart<span id="cart">0</span></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main>
+  <section class="hero" id="hero">
+    <h1>New season. New stride.</h1>
+    <p>Free shipping over $50 · 30-day returns · 2M+ happy customers</p>
+  </section>
+  <p class="status" id="status"></p>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>© 2026 ShopX Inc. · Help · Shipping · Returns · Careers</footer>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let cart = 0;
+  for (const c of ["Shoes", "Shirts", "Watches", "Bags", "Headphones"]) {
+    const a = document.createElement("a"); a.textContent = c; a.onclick = () => search(c.toLowerCase()); $("nav").append(a);
+  }
+  async function search(q) {
+    $("q").value = q;
+    $("status").textContent = "Searching…";
+    let r;
+    try {
+      const res = await fetch("/api/search?q=" + encodeURIComponent(q));
+      if (!res.ok) throw new Error(res.status);
+      r = await res.json();
+    } catch {
+      $("status").textContent = "Search is unavailable right now. Please try again.";
+      return;
+    }
+    $("hero").style.display = "none";
+    $("status").textContent = r.results.length
+      ? `${r.results.length} results for “${q}”`
+      : `No results for “${q}”. Try shoes, shirts, watches, bags or headphones.`;
+    $("grid").innerHTML = "";
+    for (const p of r.results) {
+      const el = document.createElement("div"); el.className = "card";
+      el.innerHTML = `<div class="img">${p.emoji}</div><div class="body">
+        <div class="brand">${p.brand}</div><div class="name">${p.name}</div>
+        <div class="rating">★ ${p.rating}</div>
+        <div class="row"><span class="price">$${p.price.toFixed(2)}</span>
+        ${p.stock > 0 ? `<button class="add">Add to cart</button>` : `<span class="out">Out of stock</span>`}</div></div>`;
+      const b = el.querySelector(".add");
+      if (b) b.onclick = async () => {
+        b.disabled = true;
+        const o = await fetch(`/api/order/${p.id}`, { method: "POST" }).then((r) => r.json()).catch(() => ({}));
+        if (o.ok) $("cart").textContent = ++cart;
+        b.textContent = o.ok ? "Added ✓" : "Unavailable";
+        setTimeout(() => { b.textContent = "Add to cart"; b.disabled = false; }, 1200);
+      };
+      $("grid").append(el);
+    }
+  }
+  $("f").onsubmit = (e) => { e.preventDefault(); const q = $("q").value.trim(); if (q) search(q); };
+</script>
+</body>
+</html>

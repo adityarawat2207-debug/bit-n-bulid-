@@ -1,4 +1,4 @@
-# Deploys backend/ and frontend/ to the existing Vercel projects on every push
+# Deploys backend/, frontend/ and store/ (the ShopX demo store) to the existing Vercel projects on every push
 # to the varun's branch. The repo and the Vercel account belong to different
 # people, so this uses a Vercel token instead of Vercel's GitHub integration.
 name: Deploy to Vercel
@@ -19,6 +19,8 @@ jobs:
             project: VERCEL_PROJECT_ID_BACKEND
           - app: frontend
             project: VERCEL_PROJECT_ID_FRONTEND
+          - app: store
+            project: VERCEL_PROJECT_ID_STORE
     concurrency:
       group: vercel-${{ matrix.app }}
       cancel-in-progress: false
