@@ -1,3 +1,6 @@
+import json
+
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 
@@ -122,3 +125,69 @@ def test_number_guard_catches_invented_numbers():
 
 def test_explain_baseline():
     assert post("/explain", {"scenario": "baseline"})["source"] == "template"
+
+
+@pytest.fixture
+def fake_llm(monkeypatch):
+    """Route explain() to a fake provider with a fresh rate-limit state."""
+    import ai.explainer as ex
+    monkeypatch.setattr(ex, "_calls", ex.deque())
+    monkeypatch.setattr(ex, "_paused_until", 0.0)
+    monkeypatch.setattr(ex, "_cache", {})
+    calls = []
+
+    def use(reply):
+        def call(payload, key):
+            calls.append(payload)
+            return reply(payload)
+        monkeypatch.setattr(ex, "_provider", lambda: (call, "key"))
+        return calls
+    return ex, use
+
+
+def _echo_template(ex):
+    inc = get("/incident", scenario="search_query_explosion")
+    return lambda payload: json.dumps(ex.template(inc))
+
+
+def test_llm_failure_falls_back_to_template(fake_llm):
+    ex, use = fake_llm
+
+    def boom(payload):
+        raise httpx.ConnectError("down")
+    use(boom)
+    e = post("/explain", {"scenario": "search_query_explosion"})
+    assert e["source"] == "template" and e["text"]
+
+
+def test_rate_limited_llm_pauses_and_template_answers(fake_llm):
+    ex, use = fake_llm
+    req = httpx.Request("POST", ex.GROQ_URL)
+
+    def limited(payload):
+        resp = httpx.Response(429, headers={"retry-after": "30"}, request=req)
+        raise httpx.HTTPStatusError("429", request=req, response=resp)
+    calls = use(limited)
+    for _ in range(3):
+        assert post("/explain", {"scenario": "search_query_explosion"})["source"] == "template"
+    assert len(calls) == 1  # paused after the 429, so no more calls
+
+
+def test_llm_calls_stay_within_per_minute_budget(fake_llm):
+    ex, use = fake_llm
+    inc_ids = INCIDENTS[:ex.LLM_RPM + 2]
+
+    def bad_json(payload):
+        return "not json"
+    calls = use(bad_json)
+    for s in inc_ids:
+        assert post("/explain", {"scenario": s})["source"] == "template"
+    assert len(calls) == min(len(inc_ids), ex.LLM_RPM)
+
+
+def test_good_llm_answer_is_cached(fake_llm):
+    ex, use = fake_llm
+    calls = use(_echo_template(ex))
+    for _ in range(3):
+        assert post("/explain", {"scenario": "search_query_explosion"})["source"] == "llm"
+    assert len(calls) == 1

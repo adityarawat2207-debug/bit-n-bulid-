@@ -14,7 +14,7 @@ export default function AiPanel({ scenario }: { scenario: ScenarioId }) {
     <div className="max-w-[70ch] space-y-3 text-sm leading-relaxed">
       <span className={`inline-block rounded-full border px-2 py-0.5 text-xs ${
         data.source === "llm" ? "border-violet-600 text-violet-300" : "border-slate-600 text-slate-400"}`}>
-        {data.source === "llm" ? "Written by AI · every number checked against the analysis" : "Template explanation (AI off)"}
+        {data.source === "llm" ? "Written by AI · every number checked against the analysis" : "Template explanation (AI off or busy)"}
       </span>
       <p className="text-slate-200">{s.summary}</p>
       {s.root_cause_explanation && <p className="text-slate-300">{s.root_cause_explanation}</p>}
