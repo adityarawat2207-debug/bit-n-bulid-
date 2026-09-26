@@ -1,0 +1,458 @@
+{
+ "incident": {
+  "id": "ridenow_gps_ping_flood",
+  "detected_at": "2026-09-22T12:00:00Z",
+  "onset_at": "2026-09-22T10:00:00Z",
+  "severity": "high",
+  "cost_change_pct": 47.5
+ },
+ "root_cause": {
+  "service": "location-service",
+  "confidence": 0.95,
+  "factors": {
+   "temporal": 1.0,
+   "dependency": 1.0,
+   "metric": 1.0,
+   "cost": 0.99,
+   "historical": 0.5
+  },
+  "evidence": [
+   "User requests rose x3.00 (91,728 \u2192 274,734 per minute)",
+   "Deployed v5.2 1h before its own behaviour changed",
+   "Accounts for 100% of the estimated cost increase through the services it calls",
+   "Total calls to redis rose x3.00",
+   "Total calls to event-queue rose x2.99",
+   "Its change tracks the total cost curve (correlation 0.99)",
+   "1 similar past incident on record"
+  ]
+ },
+ "candidates": [
+  {
+   "service": "api-gateway",
+   "confidence": 0.33,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x2.60, but it only forwards user traffic; the extra requests belong to the services behind it"
+  },
+  {
+   "service": "redis",
+   "confidence": 0.33,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x2.70, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "event-queue",
+   "confidence": 0.33,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x2.99, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "analytics",
+   "confidence": 0.33,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x2.98, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "maps-api",
+   "confidence": 0.1,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.0,
+    "historical": 1.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "database",
+   "confidence": 0.06,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.06,
+    "historical": 0.5
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "pricing-service",
+   "confidence": 0.02,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.01,
+    "cost": 0.1,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "matching-service",
+   "confidence": 0.01,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.08,
+    "historical": 0.0
+   },
+   "why_not": "Deployed v3.1 at 08:00, but its own behaviour did not change afterwards"
+  },
+  {
+   "service": "rider-service",
+   "confidence": 0.01,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.01,
+    "cost": 0.07,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "payment-service",
+   "confidence": 0.01,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.05,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "trip-service",
+   "confidence": 0.0,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.0,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  }
+ ],
+ "graph": {
+  "nodes": [
+   {
+    "id": "api-gateway",
+    "kind": "ingress",
+    "state": "normal",
+    "change_pct": 124.1
+   },
+   {
+    "id": "rider-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.3
+   },
+   {
+    "id": "location-service",
+    "kind": "service",
+    "state": "root",
+    "change_pct": 164.6
+   },
+   {
+    "id": "trip-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.1
+   },
+   {
+    "id": "matching-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.0
+   },
+   {
+    "id": "pricing-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.0
+   },
+   {
+    "id": "payment-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.1
+   },
+   {
+    "id": "redis",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 101.0
+   },
+   {
+    "id": "event-queue",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 107.5
+   },
+   {
+    "id": "maps-api",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": -0.1
+   },
+   {
+    "id": "database",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": 0.1
+   },
+   {
+    "id": "analytics",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 47.6
+   }
+  ],
+  "edges": [
+   {
+    "source": "api-gateway",
+    "target": "rider-service",
+    "calls_change_pct": 0.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "location-service",
+    "calls_change_pct": 199.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "trip-service",
+    "calls_change_pct": 0.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "rider-service",
+    "target": "pricing-service",
+    "calls_change_pct": 0.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "rider-service",
+    "target": "database",
+    "calls_change_pct": 0.6,
+    "on_propagation_path": false
+   },
+   {
+    "source": "location-service",
+    "target": "redis",
+    "calls_change_pct": 199.9,
+    "on_propagation_path": true
+   },
+   {
+    "source": "location-service",
+    "target": "event-queue",
+    "calls_change_pct": 198.8,
+    "on_propagation_path": true
+   },
+   {
+    "source": "trip-service",
+    "target": "matching-service",
+    "calls_change_pct": 0.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "trip-service",
+    "target": "database",
+    "calls_change_pct": 0.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "trip-service",
+    "target": "payment-service",
+    "calls_change_pct": 0.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "matching-service",
+    "target": "redis",
+    "calls_change_pct": 0.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "matching-service",
+    "target": "maps-api",
+    "calls_change_pct": 0.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "pricing-service",
+    "target": "maps-api",
+    "calls_change_pct": -0.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "pricing-service",
+    "target": "database",
+    "calls_change_pct": 0.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "event-queue",
+    "target": "analytics",
+    "calls_change_pct": 198.3,
+    "on_propagation_path": true
+   }
+  ]
+ },
+ "timeline": [
+  {
+   "t": "2026-09-22T08:00:00Z",
+   "service": "matching-service",
+   "label": "matching-service v3.1 deployed"
+  },
+  {
+   "t": "2026-09-22T09:00:00Z",
+   "service": "location-service",
+   "label": "location-service v5.2 deployed"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "location-service",
+   "label": "user requests up x3.00"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "redis",
+   "label": "redis load up x2.70"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "event-queue",
+   "label": "event-queue load up x2.99"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "analytics",
+   "label": "analytics load up x2.98"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": null,
+   "label": "Cloud cost starts rising"
+  },
+  {
+   "t": "2026-09-22T12:00:00Z",
+   "service": null,
+   "label": "Cost anomaly detected (+47.5%)"
+  }
+ ],
+ "impact": {
+  "total_monthly": 6658,
+  "by_cause": [
+   {
+    "service": "location-service",
+    "amount": 6658,
+    "landed": [
+     {
+      "service": "location-service",
+      "amount": 2785
+     },
+     {
+      "service": "api-gateway",
+      "amount": 1357
+     },
+     {
+      "service": "redis",
+      "amount": 1113
+     },
+     {
+      "service": "event-queue",
+      "amount": 1044
+     },
+     {
+      "service": "analytics",
+      "amount": 360
+     }
+    ]
+   }
+  ]
+ },
+ "recommendations": [
+  {
+   "id": "rate_limit:location-service:1.2",
+   "title": "Rate-limit location-service to 1.2x baseline traffic",
+   "action": {
+    "type": "rate_limit",
+    "target": "location-service",
+    "value": 1.2
+   },
+   "savings_monthly": 6138,
+   "latency_pct": 0.0,
+   "error_pp": 0.0,
+   "db_cpu": 0.564,
+   "risk": "medium",
+   "verdict": "RECOMMENDED",
+   "reasons": []
+  },
+  {
+   "id": "reduce_capacity:database:1.25",
+   "title": "Add database capacity +25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 1.25
+   },
+   "savings_monthly": -325,
+   "latency_pct": -3.5,
+   "error_pp": 0.0,
+   "db_cpu": 0.451,
+   "risk": "medium",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "costs $325/month more instead of saving"
+   ]
+  },
+  {
+   "id": "reduce_capacity:database:0.75",
+   "title": "Reduce database capacity 25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 0.75
+   },
+   "savings_monthly": 325,
+   "latency_pct": 13.1,
+   "error_pp": 0.0,
+   "db_cpu": 0.752,
+   "risk": "high",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "latency +13% > +10% limit"
+   ]
+  }
+ ]
+}

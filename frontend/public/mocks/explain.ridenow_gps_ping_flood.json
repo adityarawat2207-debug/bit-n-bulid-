@@ -1,0 +1,18 @@
+{
+ "text": "Cloud cost is running 47.5% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is location-service (root-cause confidence 95%). Its own behaviour changed, and the extra load spread along location-service -> redis, location-service -> event-queue, event-queue -> analytics. The next candidate, api-gateway (33%), was ruled out: its load rose x2.60, but it only forwards user traffic; the extra requests belong to the services behind it. Estimated impact traced to location-service: $6,658/month.\n\nSupporting evidence:\n- User requests rose x3.00 (91,728 \u2192 274,734 per minute)\n- Deployed v5.2 1h before its own behaviour changed\n- Accounts for 100% of the estimated cost increase through the services it calls\n- Total calls to redis rose x3.00\n- Total calls to event-queue rose x2.99\n- Its change tracks the total cost curve (correlation 0.99)\n- 1 similar past incident on record\n\nRecommended: Rate-limit location-service to 1.2x baseline traffic. Estimated saving $6,138/month, latency +0.0%, error rate +0.0pp, risk medium. Not recommended: Reduce database capacity 25%, because latency +13% > +10% limit.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 47.5% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is location-service (root-cause confidence 95%). Its own behaviour changed, and the extra load spread along location-service -> redis, location-service -> event-queue, event-queue -> analytics. The next candidate, api-gateway (33%), was ruled out: its load rose x2.60, but it only forwards user traffic; the extra requests belong to the services behind it. Estimated impact traced to location-service: $6,658/month.",
+  "evidence": [
+   "User requests rose x3.00 (91,728 \u2192 274,734 per minute)",
+   "Deployed v5.2 1h before its own behaviour changed",
+   "Accounts for 100% of the estimated cost increase through the services it calls",
+   "Total calls to redis rose x3.00",
+   "Total calls to event-queue rose x2.99",
+   "Its change tracks the total cost curve (correlation 0.99)",
+   "1 similar past incident on record"
+  ],
+  "recommendation_explanation": "Recommended: Rate-limit location-service to 1.2x baseline traffic. Estimated saving $6,138/month, latency +0.0%, error rate +0.0pp, risk medium. Not recommended: Reduce database capacity 25%, because latency +13% > +10% limit."
+ }
+}
