@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getIncident, getOverview, getScenarios } from "@/lib/api";
+import { companyOf, isBaseline } from "@/lib/companies";
 import { useApi, useScenario } from "@/lib/hooks";
 import type { ScenarioId } from "@/lib/types";
 import { DailyCostChart, HourlyCostChart } from "./CostCharts";
@@ -28,7 +29,7 @@ export default function DashboardView() {
     token && token.scenario === scenario && overview.data?.scenario === scenario && !overview.loading && !incident.loading ? token.n : 0;
 
   const select = (s: ScenarioId) => {
-    if (s !== "baseline") setToken((t) => ({ scenario: s, n: (t?.n ?? 0) + 1 }));
+    if (!isBaseline(s)) setToken((t) => ({ scenario: s, n: (t?.n ?? 0) + 1 }));
     setScenario(s);
   };
 
@@ -41,7 +42,7 @@ export default function DashboardView() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-white">Overview</h1>
           <p className="text-sm text-slate-400">
-            {scenarios.data?.find((s) => s.id === scenario)?.description ?? "ShopX cloud spend"}
+            {scenarios.data?.find((s) => s.id === scenario)?.description ?? `${companyOf(scenario).name} cloud spend`}
           </p>
         </div>
         <SourceBadge source={overview.source} />
