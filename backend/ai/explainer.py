@@ -3,10 +3,18 @@
 The engine decides; this module only explains the engine's /incident JSON.
 A deterministic template is always available. If GROQ_API_KEY (preferred) or
 ANTHROPIC_API_KEY is set, an LLM rewrites it, but its answer is thrown away (template used instead) when
-it errors, takes longer than 8s, or states any number not in the input."""
+it errors, takes longer than 8s, or states any number not in the input.
+
+Free LLM tiers allow only a few requests a minute, so good answers are cached per
+incident, calls are capped at LLM_RPM per minute, and a 429 pauses the LLM until
+its Retry-After. While the LLM is paused or over budget the template answers at once."""
+import hashlib
 import json
 import os
 import re
+import threading
+import time
+from collections import deque
 
 import httpx
 
@@ -15,6 +23,8 @@ LLM_MODEL = os.environ.get("CLOUDPULSE_LLM_MODEL", "claude-haiku-4-5-20251001")
 LLM_TIMEOUT_S = 8.0
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = os.environ.get("CLOUDPULSE_GROQ_MODEL", "openai/gpt-oss-120b")
+LLM_RPM = int(os.environ.get("CLOUDPULSE_LLM_RPM", "4"))
+RATE_LIMIT_COOLDOWN_S = 60.0
 
 SYSTEM_PROMPT = """You are CloudPulse's incident explanation engine.
 
@@ -137,11 +147,50 @@ def _provider():
     return None, None
 
 
-def _llm(inc, call, key):
-    payload = dict(incident=inc["incident"], root_cause=inc["root_cause"], candidates=inc["candidates"][:3],
-                   propagation=[e for e in inc["graph"]["edges"] if e["on_propagation_path"]],
-                   estimated_impact=inc["impact"], recommendations=inc["recommendations"])
-    text = call(json.dumps(payload), key)
+# ------------------------------------------------------------ rate limiting
+_lock = threading.Lock()
+_calls = deque()     # monotonic times of recent LLM calls
+_paused_until = 0.0  # set by a 429
+_cache = {}          # payload hash -> checked LLM sections
+
+
+def _take_slot():
+    """Reserve one LLM call in the per-minute budget; False means use the template."""
+    now = time.monotonic()
+    with _lock:
+        if now < _paused_until:
+            return False
+        while _calls and now - _calls[0] >= 60:
+            _calls.popleft()
+        if len(_calls) >= LLM_RPM:
+            return False
+        _calls.append(now)
+        return True
+
+
+def _pause(resp):
+    global _paused_until
+    try:
+        wait = float(resp.headers.get("retry-after", RATE_LIMIT_COOLDOWN_S))
+    except ValueError:
+        wait = RATE_LIMIT_COOLDOWN_S
+    with _lock:
+        _paused_until = max(_paused_until, time.monotonic() + min(wait, 300))
+
+
+def _payload(inc):
+    return json.dumps(dict(incident=inc["incident"], root_cause=inc["root_cause"], candidates=inc["candidates"][:3],
+                           propagation=[e for e in inc["graph"]["edges"] if e["on_propagation_path"]],
+                           estimated_impact=inc["impact"], recommendations=inc["recommendations"]))
+
+
+def _llm(payload, call, key):
+    try:
+        text = call(payload, key)
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 429:
+            _pause(e.response)
+        raise
     out = json.loads(text[text.index("{"):text.rindex("}") + 1])
     keys = ("summary", "root_cause_explanation", "evidence", "recommendation_explanation")
     if not all(k in out for k in keys) or not isinstance(out["evidence"], list):
@@ -157,11 +206,19 @@ def explain(inc):
         return dict(text=s["summary"], source="template", sections=s)
     call, key = _provider()
     if call:
-        try:
-            s = _llm(inc, call, key)
-            if not unsupported_numbers(_join(s), inc):
-                return dict(text=_join(s), source="llm", sections=s)
-        except Exception:  # timeout, HTTP error, bad JSON: the template is the fallback
-            pass
+        payload = _payload(inc)
+        cache_key = hashlib.sha256(payload.encode()).hexdigest()
+        s = _cache.get(cache_key)
+        if s is None and _take_slot():
+            try:
+                s = _llm(payload, call, key)
+                if unsupported_numbers(_join(s), inc):
+                    s = None
+            except Exception:  # timeout, 429 or other HTTP error, bad JSON: the template is the fallback
+                s = None
+            if s is not None:
+                _cache[cache_key] = s
+        if s is not None:
+            return dict(text=_join(s), source="llm", sections=s)
     s = template(inc)
     return dict(text=_join(s), source="template", sections=s)
