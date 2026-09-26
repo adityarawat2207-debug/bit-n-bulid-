@@ -63,7 +63,7 @@ export default function IncidentView({ scenario }: { scenario: ScenarioId }) {
       </div>
 
       <Card title="Propagation through the dependency graph" right={<GraphLegend />}>
-        <DependencyGraph graph={inc.graph} height={460} />
+        <DependencyGraph scenario={scenario} graph={inc.graph} height={460} />
       </Card>
 
       <Card title="Recommendations: cost vs performance"
