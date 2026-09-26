@@ -60,6 +60,18 @@ def children(n):
     return [t for (s, t) in EDGES if s == n]
 
 
+DB_LATENCY_KNEE = 0.88  # past this utilisation, extend 4/(1-rho) linearly
+
+
+def db_latency(rho):
+    """Queueing latency (ms) 4/(1-rho); linear past the knee so an already
+    saturated database still gets slower (not stuck at a cap) as load grows."""
+    if rho <= DB_LATENCY_KNEE:
+        return 4.0 / (1 - rho)
+    k = DB_LATENCY_KNEE
+    return 4.0 / (1 - k) + 4.0 / (1 - k) ** 2 * (rho - k)
+
+
 def steady_state(demand, ratios, db_capacity=DB_CAPACITY):
     """Return per-node inbound load, per-edge calls, DB utilisation,
     latency (ms), error rate (%) and cost ($/hour, by resource type)."""
@@ -73,7 +85,7 @@ def steady_state(demand, ratios, db_capacity=DB_CAPACITY):
             inbound[c] += calls[e]
     work = sum(calls[(s, "database")] * QUERY_WEIGHT[s] for s in parents("database"))
     rho = work / db_capacity
-    db_lat = 4.0 / (1 - min(rho, 0.97))
+    db_lat = db_latency(rho)
     reject = max(0.0, 1 - 1 / rho) if rho > 1 else 0.0
     db_err = 100 * reject + (0.5 * (rho - 0.85) / 0.15 if rho > 0.85 else 0.0)
 
@@ -98,7 +110,7 @@ def base_ratios():
 COMPUTE = {GATEWAY: (200, 300), "auth-service": (150, 200), "search-service": (300, 500),
            "order-service": (200, 250), "image-service": (150, 250),
            "payment-service": (70, 80), "analytics": (100, 150)}          # $2,900
-DB_CAPACITY_COST, DB_IO_COST = 2000, 800                                 # $2,800
+DB_CAPACITY_COST, DB_IO_COST = 1100, 1700                                # $2,800 (I/O-billed, so it tracks load)
 NETWORK_TOTAL = 1500                                                     # $1,500
 REDIS = (400, 550)                                                       # $950
 STORAGE = {"database": 1400, "analytics": 390}                           # $1,790
