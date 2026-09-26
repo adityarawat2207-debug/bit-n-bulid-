@@ -3,39 +3,39 @@
   "id": "database_overload",
   "detected_at": "2026-09-22T12:00:00Z",
   "onset_at": "2026-09-22T10:00:00Z",
-  "severity": "medium",
-  "cost_change_pct": 16.0
+  "severity": "high",
+  "cost_change_pct": 27.4
  },
  "root_cause": {
   "service": "order-service",
-  "confidence": 0.84,
+  "confidence": 0.86,
   "factors": {
    "temporal": 1.0,
-   "dependency": 0.79,
+   "dependency": 0.83,
    "metric": 1.0,
-   "cost": 0.98,
+   "cost": 0.99,
    "historical": 0.0
   },
   "evidence": [
-   "Queries/request to database rose x3.49 (3.00 -> 10.48)",
+   "Queries/request to database rose x3.49 (3.00 \u2192 10.48)",
    "Deployed v3.0 1h before its own behaviour changed",
-   "Accounts for 79% of the estimated cost increase through the services it calls",
+   "Accounts for 83% of the estimated cost increase through the services it calls",
    "Total calls to database rose x3.50",
-   "Its change tracks the total cost curve (correlation 0.98)"
+   "Its change tracks the total cost curve (correlation 0.99)"
   ]
  },
  "candidates": [
   {
    "service": "search-service",
-   "confidence": 0.44,
+   "confidence": 0.43,
    "factors": {
     "temporal": 0.6,
-    "dependency": 0.2,
+    "dependency": 0.16,
     "metric": 0.14,
-    "cost": 0.89,
+    "cost": 0.88,
     "historical": 0.5
    },
-   "why_not": "Its own change (user requests x1.10) is real but explains only 20% of the estimated cost increase"
+   "why_not": "Its own change (user requests x1.10) is real but explains only 16% of the estimated cost increase"
   },
   {
    "service": "analytics",
@@ -68,7 +68,7 @@
     "temporal": 0.05,
     "dependency": 0.0,
     "metric": 0.0,
-    "cost": 0.89,
+    "cost": 0.87,
     "historical": 0.0
    },
    "why_not": "Its load rose x1.06, but it only forwards user traffic; the extra requests belong to the services behind it"
@@ -80,7 +80,7 @@
     "temporal": 0.03,
     "dependency": 0.0,
     "metric": 0.0,
-    "cost": 0.84,
+    "cost": 0.82,
     "historical": 0.0
    },
    "why_not": "Its load rose x1.10, but that load is pushed by its callers; its own behaviour did not change"
@@ -92,7 +92,7 @@
     "temporal": 0.0,
     "dependency": 0.01,
     "metric": 0.04,
-    "cost": 0.25,
+    "cost": 0.24,
     "historical": 0.0
    },
    "why_not": "No meaningful change in its own behaviour or load"
@@ -104,7 +104,7 @@
     "temporal": 0.0,
     "dependency": 0.0,
     "metric": 0.01,
-    "cost": 0.17,
+    "cost": 0.16,
     "historical": 0.0
    },
    "why_not": "No meaningful change in its own behaviour or load"
@@ -116,7 +116,7 @@
     "temporal": 0.0,
     "dependency": 0.0,
     "metric": 0.0,
-    "cost": 0.16,
+    "cost": 0.15,
     "historical": 0.0
    },
    "why_not": "No meaningful change in its own behaviour or load"
@@ -188,7 +188,7 @@
     "id": "database",
     "kind": "resource",
     "state": "affected",
-    "change_pct": 25.1
+    "change_pct": 52.9
    },
    {
     "id": "analytics",
@@ -295,19 +295,19 @@
   {
    "t": "2026-09-22T12:00:00Z",
    "service": null,
-   "label": "Cost anomaly detected (+16.0%)"
+   "label": "Cost anomaly detected (+27.4%)"
   }
  ],
  "impact": {
-  "total_monthly": 1631,
+  "total_monthly": 2803,
   "by_cause": [
    {
     "service": "order-service",
-    "amount": 1298,
+    "amount": 2357,
     "landed": [
      {
       "service": "database",
-      "amount": 954
+      "amount": 2014
      },
      {
       "service": "order-service",
@@ -321,15 +321,15 @@
    },
    {
     "service": "search-service",
-    "amount": 333,
+    "amount": 446,
     "landed": [
+     {
+      "service": "database",
+      "amount": 215
+     },
      {
       "service": "search-service",
       "amount": 126
-     },
-     {
-      "service": "database",
-      "amount": 102
      },
      {
       "service": "redis",
@@ -356,8 +356,8 @@
     "source": "order-service",
     "target": "database"
    },
-   "savings_monthly": 1384,
-   "latency_pct": -92.5,
+   "savings_monthly": 2543,
+   "latency_pct": -85.2,
    "error_pp": -0.46,
    "db_cpu": 0.447,
    "risk": "low",
@@ -372,14 +372,14 @@
     "target": "database",
     "value": 1.25
    },
-   "savings_monthly": -500,
-   "latency_pct": -80.5,
+   "savings_monthly": -275,
+   "latency_pct": -61.5,
    "error_pp": -0.46,
    "db_cpu": 0.79,
    "risk": "medium",
    "verdict": "NOT RECOMMENDED",
    "reasons": [
-    "costs $500/month more instead of saving"
+    "costs $275/month more instead of saving"
    ]
   },
   {
@@ -390,13 +390,14 @@
     "target": "database",
     "value": 0.75
    },
-   "savings_monthly": 500,
-   "latency_pct": 0.0,
+   "savings_monthly": 275,
+   "latency_pct": 127.2,
    "error_pp": 25.19,
    "db_cpu": 1.317,
    "risk": "high",
    "verdict": "NOT RECOMMENDED",
    "reasons": [
+    "latency +127% > +10% limit",
     "error rate +25.2pp > +0.5pp limit",
     "DB CPU 132% > 85% headroom limit"
    ]
