@@ -82,7 +82,7 @@ export default function DashboardView() {
 
           <div className="grid gap-4 lg:grid-cols-5">
             <Card title="Service dependencies" right={<GraphLegend />} className="lg:col-span-3">
-              <DependencyGraph graph={inc?.graph ?? null} height={420} />
+              <DependencyGraph key={companyOf(scenario).id} scenario={scenario} graph={inc?.graph ?? null} height={420} />
             </Card>
             <Card title="Cost by service (monthly)" className="lg:col-span-2">
               <ServiceTable rows={o.services} />
