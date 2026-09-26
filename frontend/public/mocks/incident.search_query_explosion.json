@@ -4,23 +4,23 @@
   "detected_at": "2026-09-22T12:00:00Z",
   "onset_at": "2026-09-22T10:00:00Z",
   "severity": "high",
-  "cost_change_pct": 26.7
+  "cost_change_pct": 36.1
  },
  "root_cause": {
   "service": "search-service",
   "confidence": 0.95,
   "factors": {
    "temporal": 1.0,
-   "dependency": 0.99,
+   "dependency": 1.0,
    "metric": 1.0,
    "cost": 0.99,
    "historical": 0.5
   },
   "evidence": [
-   "Queries/request to database rose x3.98 (1.20 -> 4.78)",
-   "User requests rose x1.20 (42,640 -> 51,236 per minute)",
+   "Queries/request to database rose x3.98 (1.20 \u2192 4.78)",
+   "User requests rose x1.20 (42,640 \u2192 51,236 per minute)",
    "Deployed v2.0 1h before its own behaviour changed",
-   "Accounts for 99% of the estimated cost increase through the services it calls",
+   "Accounts for 100% of the estimated cost increase through the services it calls",
    "Total calls to redis rose x1.20",
    "Total calls to database rose x4.78",
    "Its change tracks the total cost curve (correlation 0.99)",
@@ -191,7 +191,7 @@
     "id": "database",
     "kind": "resource",
     "state": "affected",
-    "change_pct": 21.2
+    "change_pct": 44.2
    },
    {
     "id": "analytics",
@@ -303,23 +303,23 @@
   {
    "t": "2026-09-22T12:00:00Z",
    "service": null,
-   "label": "Cost anomaly detected (+26.7%)"
+   "label": "Cost anomaly detected (+36.1%)"
   }
  ],
  "impact": {
-  "total_monthly": 2735,
+  "total_monthly": 3708,
   "by_cause": [
    {
     "service": "search-service",
-    "amount": 2735,
+    "amount": 3708,
     "landed": [
+     {
+      "service": "database",
+      "amount": 1866
+     },
      {
       "service": "search-service",
       "amount": 1273
-     },
-     {
-      "service": "database",
-      "amount": 893
      },
      {
       "service": "analytics",
@@ -346,8 +346,8 @@
     "source": "search-service",
     "target": "database"
    },
-   "savings_monthly": 2243,
-   "latency_pct": -70.8,
+   "savings_monthly": 3171,
+   "latency_pct": -70.5,
    "error_pp": -0.14,
    "db_cpu": 0.459,
    "risk": "low",
@@ -362,14 +362,14 @@
     "target": "database",
     "value": 1.25
    },
-   "savings_monthly": -500,
-   "latency_pct": -46.5,
+   "savings_monthly": -275,
+   "latency_pct": -46.1,
    "error_pp": -0.14,
    "db_cpu": 0.714,
    "risk": "medium",
    "verdict": "NOT RECOMMENDED",
    "reasons": [
-    "costs $500/month more instead of saving"
+    "costs $275/month more instead of saving"
    ]
   },
   {
@@ -380,14 +380,14 @@
     "target": "database",
     "value": 0.75
    },
-   "savings_monthly": 500,
-   "latency_pct": 192.2,
+   "savings_monthly": 275,
+   "latency_pct": 166.7,
    "error_pp": 16.97,
    "db_cpu": 1.19,
    "risk": "high",
    "verdict": "NOT RECOMMENDED",
    "reasons": [
-    "latency +192% > +10% limit",
+    "latency +167% > +10% limit",
     "error rate +17.0pp > +0.5pp limit",
     "DB CPU 119% > 85% headroom limit"
    ]
