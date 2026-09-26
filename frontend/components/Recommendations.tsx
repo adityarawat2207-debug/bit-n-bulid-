@@ -20,11 +20,11 @@ function reasonFor(rec: Recommendation, inc: IncidentDetail | null) {
 }
 
 function Metric({ label, value, good, hint }: { label: string; value: string; good: boolean | null; hint: string }) {
-  const tone = good === null ? "text-slate-200" : good ? "text-emerald-300" : "text-rose-300";
+  const tone = good === null ? "text-ink" : good ? "text-ok" : "text-alert";
   return (
-    <div className="bg-slate-950/40 px-3 py-2" title={hint}>
-      <div className="text-[11px] text-slate-500">{label}</div>
-      <div className={`font-medium tabular-nums ${tone}`}>{value}</div>
+    <div className="bg-surface px-3 py-2" title={hint}>
+      <div className="text-[11px] text-muted">{label}</div>
+      <div className={`font-semibold tabular-nums ${tone}`}>{value}</div>
     </div>
   );
 }
@@ -38,15 +38,21 @@ export function RecommendationCard({ rec, incident, currentMonthly }: {
   const isFix = rec.action.type !== "reduce_capacity";
   const after = currentMonthly !== undefined ? currentMonthly - rec.savings_monthly : undefined;
   return (
-    <div className={`flex flex-col rounded-xl border p-4 ${
-      ok ? "border-emerald-700/80 bg-emerald-950/25 shadow-[0_0_32px_-12px] shadow-emerald-500/40" : "border-slate-800 bg-slate-900/40"}`}>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="font-medium leading-snug text-white">{rec.title}</h3>
+    <div className={`@container flex flex-col rounded-lg border p-4 ${
+      ok ? "border-ok-line border-t-4 border-t-ok bg-surface" : "border-line bg-canvas/60"}`}>
+      <div className="flex flex-wrap items-center gap-1.5">
         <Verdict verdict={rec.verdict} />
+        <Level level={rec.risk} label="Risk" />
+        {isFix && incident && (
+          <span className="rounded-md bg-sunk px-2 py-0.5 text-xs font-medium text-ink-2">
+            Root-cause confidence {confidence(incident.root_cause.confidence)}
+          </span>
+        )}
       </div>
-      <p className="mt-1.5 text-sm text-slate-400">{reasonFor(rec, incident)}</p>
+      <h3 className="mt-2.5 font-semibold leading-snug text-ink">{rec.title}</h3>
+      <p className="mt-1 text-sm text-muted">{reasonFor(rec, incident)}</p>
 
-      <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-slate-800 bg-slate-800 text-sm sm:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-line bg-line text-sm @md:grid-cols-4">
         <Metric label="Savings" hint="Estimated monthly savings" value={`${usd(rec.savings_monthly)}/mo`} good={rec.savings_monthly > 0} />
         <Metric label="Latency" hint="Latency change; limit +10%" value={pct(rec.latency_pct)}
           good={rec.latency_pct <= 10 ? (rec.latency_pct < 0 ? true : null) : false} />
@@ -56,37 +62,33 @@ export function RecommendationCard({ rec, incident, currentMonthly }: {
           good={rec.db_cpu <= 0.85 ? null : false} />
       </div>
 
-      {currentMonthly !== undefined && after !== undefined && (
-        <div className="mt-3 text-xs">
-          <div className="flex justify-between text-slate-400">
-            <span>Monthly cost</span>
-            <span className="tabular-nums">
-              {usd(currentMonthly)} → <b className={`font-medium ${after < currentMonthly ? "text-emerald-300" : "text-rose-300"}`}>{usd(after)}</b>
-            </span>
-          </div>
-          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-800">
-            <div className={`h-full rounded-full ${ok ? "bg-emerald-500/80" : "bg-slate-500"}`}
-              style={{ width: `${Math.min(100, (100 * after) / Math.max(after, currentMonthly))}%` }} />
-          </div>
-        </div>
-      )}
-
       {rec.reasons.length > 0 && (
-        <ul className="mt-3 space-y-1 text-sm text-rose-300">
+        <ul className="mt-3 space-y-1 text-sm text-alert">
           {rec.reasons.map((r) => (
-            <li key={r} className="flex gap-2"><span aria-hidden>✕</span>{r}</li>
+            <li key={r} className="flex items-baseline gap-2">
+              <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 shrink-0" aria-hidden>
+                <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              {r}
+            </li>
           ))}
         </ul>
       )}
 
-      <div className="mt-auto flex flex-wrap gap-2 pt-3">
-        <Level level={rec.risk} label="Risk" />
-        {isFix && incident && (
-          <span className="rounded-full border border-slate-700 px-2 py-0.5 text-xs text-slate-400">
-            Root-cause confidence {confidence(incident.root_cause.confidence)}
-          </span>
-        )}
-      </div>
+      {currentMonthly !== undefined && after !== undefined && (
+        <div className="mt-auto pt-4 text-xs">
+          <div className="flex justify-between text-muted">
+            <span>Monthly cost</span>
+            <span className="tabular-nums">
+              {usd(currentMonthly)} → <b className={`font-semibold ${after < currentMonthly ? "text-ok" : "text-alert"}`}>{usd(after)}</b>
+            </span>
+          </div>
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-sunk">
+            <div className={`h-full rounded-full ${ok ? "bg-ok" : "bg-faint"}`}
+              style={{ width: `${Math.min(100, (100 * after) / Math.max(after, currentMonthly))}%` }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -137,14 +139,14 @@ export function WhatIfPanel({ scenario, incident, currentMonthly }: {
 
   const tab = (t: Action["type"], label: string) => (
     <button onClick={() => setType(t)} aria-pressed={type === t}
-      className={`rounded-md px-3 py-1.5 text-sm transition-colors ${type === t ? "bg-slate-700 text-white shadow" : "text-slate-400 hover:text-white"}`}>
+      className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${type === t ? "bg-surface text-ink shadow-[0_1px_2px_rgb(20_25_34/0.08),0_0_0_1px_rgb(20_25_34/0.06)]" : "text-muted hover:text-ink"}`}>
       {label}
     </button>
   );
 
   return (
     <div className="space-y-4">
-      <div className="inline-flex flex-wrap gap-1 rounded-lg border border-slate-800 bg-slate-950/60 p-1">
+      <div className="inline-flex flex-wrap gap-0.5 rounded-lg bg-sunk p-1">
         {tab("reduce_capacity", "Database capacity")}
         {tab("rate_limit", "Rate-limit a service")}
         {tab("fix_amplification", "Fix call amplification")}
@@ -152,46 +154,46 @@ export function WhatIfPanel({ scenario, incident, currentMonthly }: {
 
       {type === "reduce_capacity" && (
         <label className="block text-sm">
-          <span className="text-slate-400">Database capacity: </span>
-          <b className="tabular-nums text-white">{Math.round(capacity * 100)}%</b>
-          <span className="text-slate-500"> of today</span>
+          <span className="text-muted">Database capacity: </span>
+          <b className="font-semibold tabular-nums text-ink">{Math.round(capacity * 100)}%</b>
+          <span className="text-muted"> of today</span>
           <input type="range" min={0.5} max={1.5} step={0.05} value={capacity}
-            onChange={(e) => setCapacity(Number(e.target.value))} className="mt-2 w-full accent-sky-500" />
+            onChange={(e) => setCapacity(Number(e.target.value))} className="mt-2 w-full" />
         </label>
       )}
       {type === "rate_limit" && (
         <div className="flex flex-wrap items-end gap-4 text-sm">
           <label>
-            <div className="text-slate-400">Service</div>
+            <div className="text-muted">Service</div>
             <select value={limitTarget} onChange={(e) => setLimitTarget(e.target.value)}
-              className="mt-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5">
+              className="mt-1 rounded-md border border-line-strong bg-surface px-2 py-1.5 text-ink">
               {ENTRY.map((s) => <option key={s}>{s}</option>)}
             </select>
           </label>
           <label className="min-w-48 flex-1">
-            <span className="text-slate-400">Max traffic: </span>
-            <b className="tabular-nums text-white">{limit.toFixed(1)}x</b>
-            <span className="text-slate-500"> baseline</span>
+            <span className="text-muted">Max traffic: </span>
+            <b className="font-semibold tabular-nums text-ink">{limit.toFixed(1)}x</b>
+            <span className="text-muted"> baseline</span>
             <input type="range" min={0.8} max={3} step={0.1} value={limit}
-              onChange={(e) => setLimit(Number(e.target.value))} className="mt-2 w-full accent-sky-500" />
+              onChange={(e) => setLimit(Number(e.target.value))} className="mt-2 w-full" />
           </label>
         </div>
       )}
       {type === "fix_amplification" && (
         <label className="block text-sm">
-          <div className="text-slate-400">Restore calls per request to baseline on edge</div>
+          <div className="text-muted">Restore calls per request to baseline on edge</div>
           <select value={edge} onChange={(e) => setEdge(e.target.value)}
-            className="mt-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5">
+            className="mt-1 rounded-md border border-line-strong bg-surface px-2 py-1.5 text-ink">
             {EDGES.map(([s, t]) => <option key={`${s}|${t}`} value={`${s}|${t}`}>{s} → {t}</option>)}
           </select>
         </label>
       )}
 
       <div aria-live="polite" aria-busy={busy} className={`transition-opacity ${busy ? "opacity-60" : ""}`}>
-        {error && <div className="rounded-lg border border-amber-800 bg-amber-950/40 p-3 text-sm text-amber-300">{error}</div>}
+        {error && <div className="rounded-lg border border-warn-line bg-warn-soft p-3 text-sm text-warn">{error}</div>}
         {result && <RecommendationCard rec={result} incident={incident} currentMonthly={currentMonthly} />}
         {!result && !error && (
-          <div className="flex h-40 animate-pulse items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-sm text-slate-500">
+          <div className="flex h-40 animate-pulse items-center justify-center rounded-lg border border-line bg-canvas text-sm text-muted">
             Simulating the change against the {company.name} model…
           </div>
         )}

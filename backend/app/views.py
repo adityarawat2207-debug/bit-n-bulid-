@@ -6,6 +6,8 @@ from engine.pipeline import analyse
 from engine.tradeoff import evaluate
 from simulator.model import SCENARIOS, baseline_of, generate, iso, iso_date
 
+from . import live
+
 DETECT_AFTER_HOURS = 2  # the onset rule needs 2 sustained hours before it fires
 
 
@@ -13,13 +15,28 @@ class UnknownScenario(ValueError):
     pass
 
 
-@lru_cache(maxsize=None)
 def run(scenario):
-    """Generate + analyse. Deterministic per scenario, so caching keeps the
-    backend stateless while avoiding repeat work."""
     if scenario not in SCENARIOS:
         raise UnknownScenario(f"unknown scenario {scenario!r}; expected one of {', '.join(SCENARIOS)}")
+    if SCENARIOS[scenario].get("live"):
+        spec, _ = live.spec()
+        return _run_live(scenario, tuple(spec["deployments"]), tuple(spec["effects"]))
+    return _run(scenario)
+
+
+@lru_cache(maxsize=None)
+def _run(scenario):
+    """Generate + analyse. Deterministic per scenario, so caching keeps the
+    backend stateless while avoiding repeat work."""
     d = generate(scenario)
+    return d, analyse(d)
+
+
+@lru_cache(maxsize=32)
+def _run_live(scenario, deployments, effects):
+    """Same, for a spec built from live telemetry (cached per distinct spec)."""
+    co = SCENARIOS[scenario]["company"]
+    d = co.generate(dict(deployments=list(deployments), effects=list(effects)))
     return d, analyse(d)
 
 

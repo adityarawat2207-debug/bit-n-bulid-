@@ -76,3 +76,14 @@ export async function whatIf(s: ScenarioId, action: Action): Promise<Result<Reco
 function post(body: unknown): RequestInit {
   return { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) };
 }
+
+export interface LiveStatus {
+  requests_total: number;
+  db_queries_per_request: number | null;
+  baseline_queries_per_request: number;
+  latency_ms: number | null;
+  versions: Record<string, string>;
+}
+
+export const getLive = () => json<LiveStatus>(`${API}/live`);
+export const resetLive = () => json<LiveStatus>(`${API}/live/reset`, { method: "POST" });

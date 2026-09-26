@@ -1,0 +1,10 @@
+{
+ "text": "No active cost incident. Spend is within its normal range.",
+ "source": "template",
+ "sections": {
+  "summary": "No active cost incident. Spend is within its normal range.",
+  "root_cause_explanation": "",
+  "evidence": [],
+  "recommendation_explanation": ""
+ }
+}

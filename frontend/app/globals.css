@@ -1,33 +1,61 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plex-sans);
+  --font-figure: var(--font-plex-condensed);
+}
+
+/* Light, cool "instrument" palette. Red is reserved for anomalies and the
+   root cause; petrol is the brand and the cost line. */
+@theme {
+  --color-canvas: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-sunk: #eef1f4;
+  --color-ink: #141922;
+  --color-ink-2: #3a4252;
+  --color-muted: #667085;
+  --color-faint: #98a2b3;
+  --color-line: #e3e7ec;
+  --color-line-strong: #cdd3db;
+
+  --color-brand: #0a6c7c;
+  --color-brand-soft: #e4f1f3;
+
+  --color-alert: #c8321f;
+  --color-alert-soft: #fdeeeb;
+  --color-alert-line: #f1c4bc;
+
+  --color-warn: #a96400;
+  --color-warn-soft: #fff5e3;
+  --color-warn-line: #efd29c;
+
+  --color-ok: #1b7f4f;
+  --color-ok-soft: #e7f4ed;
+  --color-ok-line: #b9dfca;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background:
-    radial-gradient(1200px 400px at 50% -200px, rgb(56 189 248 / 0.06), transparent),
-    #020617; /* slate-950 */
-  color: #e2e8f0; /* slate-200 */
+  background: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 ::selection {
-  background: rgb(56 189 248 / 0.35);
+  background: #cfe6ea;
 }
 
 :focus-visible {
-  outline: 2px solid #38bdf8;
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 input[type="range"] {
   cursor: pointer;
+  accent-color: var(--color-brand);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -40,29 +68,30 @@ input[type="range"] {
   }
 }
 
-/* React Flow: match the dark cards. The library stylesheet loads after this
+/* React Flow on a white card. The library stylesheet loads after this
    file, so these selectors are scoped under .cp-graph to win on specificity. */
 .cp-graph .react-flow__attribution {
   background: transparent;
-  opacity: 0.4;
+  opacity: 0.5;
 }
 .cp-graph .react-flow__attribution a {
-  color: #475569;
+  color: var(--color-faint);
 }
 .cp-graph .react-flow__edge-textbg {
-  fill: #0f172a;
-  stroke: #334155;
+  fill: #ffffff;
+  stroke: var(--color-line-strong);
   stroke-width: 1;
 }
 .cp-graph .react-flow__edge-text {
-  fill: #cbd5e1;
+  fill: var(--color-ink-2);
   font-size: 10px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .cp-graph .react-flow__edge.hot .react-flow__edge-textbg {
-  fill: #3f0d18;
-  stroke: #9f1239;
+  fill: var(--color-alert-soft);
+  stroke: var(--color-alert-line);
 }
 .cp-graph .react-flow__edge.hot .react-flow__edge-text {
-  fill: #fecdd3;
+  fill: var(--color-alert);
 }

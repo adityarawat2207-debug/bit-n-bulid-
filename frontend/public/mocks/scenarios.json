@@ -32,6 +32,14 @@
   "baseline": "baseline"
  },
  {
+  "id": "shopx_live",
+  "name": "Live storefront",
+  "description": "Real requests from the running ShopX store, replayed at production traffic",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
   "id": "ridenow_baseline",
   "name": "Healthy baseline",
   "description": "Normal RideNow traffic with no incident",

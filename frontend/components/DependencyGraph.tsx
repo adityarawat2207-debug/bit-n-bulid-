@@ -17,36 +17,53 @@ function healthyGraph(scenario: ScenarioId): Graph {
 }
 
 const STATE_STYLE: Record<NodeState, string> = {
-  root: "border-rose-500 bg-rose-950 shadow-[0_0_28px_-6px] shadow-rose-500/70",
-  affected: "border-amber-500/80 bg-amber-950/60",
-  normal: "border-slate-700/80 bg-slate-900",
+  root: "border-alert bg-alert-soft ring-4 ring-alert/10",
+  affected: "border-warn-line bg-warn-soft",
+  normal: "border-line-strong bg-surface",
 };
 const STATE_LABEL: Record<NodeState, string> = { root: "Likely root cause", affected: "Impacted", normal: "Healthy" };
-const STATE_TEXT: Record<NodeState, string> = { root: "text-rose-300", affected: "text-amber-300", normal: "text-slate-500" };
-const KIND_LABEL: Record<NodeKind, string> = { ingress: "edge", service: "service", resource: "resource" };
+const STATE_TEXT: Record<NodeState, string> = { root: "text-alert", affected: "text-warn", normal: "text-faint" };
+const KIND_LABEL: Record<NodeKind, string> = { ingress: "entry point", service: "service", resource: "resource" };
+
+const ICON_TONE: Record<NodeState, string> = { root: "bg-surface text-alert", affected: "bg-surface text-warn", normal: "bg-sunk text-muted" };
+
+/** entry point: arrow into a gate; service: a server box; resource: a data cylinder */
+function KindIcon({ kind }: { kind: NodeKind }) {
+  const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+  return (
+    <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" aria-hidden>
+      {kind === "ingress" && <><path d="M2 8h8M7 5l3 3-3 3" {...common} /><path d="M13 3v10" {...common} /></>}
+      {kind === "service" && <><rect x="2.5" y="3" width="11" height="10" rx="2" {...common} /><path d="M5 6.5h6M5 9.5h3.5" {...common} /></>}
+      {kind === "resource" && <><ellipse cx="8" cy="4" rx="5" ry="1.8" {...common} /><path d="M3 4v8c0 1 2.2 1.8 5 1.8s5-.8 5-1.8V4M3 8c0 1 2.2 1.8 5 1.8S13 9 13 8" {...common} /></>}
+    </svg>
+  );
+}
 
 type SvcData = { id: string; kind: NodeKind; state: NodeState; change_pct: number };
 
 function ServiceNode({ data }: NodeProps<Node<SvcData>>) {
   const moved = Math.abs(data.change_pct) >= 1;
   return (
-    <div className={`w-[164px] rounded-lg border px-3 py-2 text-left ${STATE_STYLE[data.state]}`}>
-      <Handle type="target" position={Position.Top} className="!h-1.5 !w-1.5 !border-0 !bg-slate-600" />
-      <div className="flex items-center justify-between gap-1">
-        <span className="truncate text-[13px] font-semibold text-white">{data.id}</span>
-        {data.state === "root" && <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-rose-400" />}
+    <div className={`w-[164px] rounded-lg border px-3 py-2 text-left shadow-[0_1px_2px_rgb(20_25_34/0.05)] ${STATE_STYLE[data.state]}`}>
+      <Handle type="target" position={Position.Top} className="!h-1.5 !w-1.5 !border-0 !bg-line-strong" />
+      <div className="flex items-center gap-2">
+        <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-md ${ICON_TONE[data.state]}`}>
+          <KindIcon kind={data.kind} />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">{data.id}</span>
+        {data.state === "root" && <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-alert" />}
       </div>
-      <div className="mt-1 flex items-center justify-between text-[11px]">
-        <span className={STATE_TEXT[data.state]}>
+      <div className="mt-1.5 flex items-center justify-between text-[11px]">
+        <span className={`font-medium ${STATE_TEXT[data.state]}`}>
           {data.state === "normal" ? KIND_LABEL[data.kind] : STATE_LABEL[data.state]}
         </span>
         {moved && (
-          <span className={`tabular-nums ${data.change_pct > 0 ? "text-rose-300" : "text-emerald-300"}`} title="Cost change vs baseline">
+          <span className={`font-semibold tabular-nums ${data.change_pct > 0 ? "text-alert" : "text-ok"}`} title="Cost change vs baseline">
             {pct(data.change_pct, 0)}
           </span>
         )}
       </div>
-      <Handle type="source" position={Position.Bottom} className="!h-1.5 !w-1.5 !border-0 !bg-slate-600" />
+      <Handle type="source" position={Position.Bottom} className="!h-1.5 !w-1.5 !border-0 !bg-line-strong" />
     </div>
   );
 }
@@ -75,7 +92,7 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
     () =>
       g.edges.map((e) => {
         const hot = e.on_propagation_path;
-        const color = hot ? "#fb7185" : Math.abs(e.calls_change_pct) >= 5 ? "#94a3b8" : "#334155";
+        const color = hot ? "#c8321f" : Math.abs(e.calls_change_pct) >= 5 ? "#667085" : "#c3cad3";
         return {
           id: `${e.source}->${e.target}`,
           source: e.source,
@@ -85,7 +102,7 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
           labelBgPadding: [5, 3] as [number, number],
           labelBgBorderRadius: 4,
           label: Math.abs(e.calls_change_pct) >= 5 ? `${pct(e.calls_change_pct, 0)} calls` : undefined,
-          style: { stroke: color, strokeWidth: hot ? 2.5 : 1.2 },
+          style: { stroke: color, strokeWidth: hot ? 2 : 1.2 },
           markerEnd: { type: MarkerType.ArrowClosed, color },
           zIndex: hot ? 1 : 0,
         };
@@ -118,12 +135,12 @@ export default function DependencyGraph({ scenario, graph, height = 480 }: {
 
 export function GraphLegend() {
   return (
-    <div className="flex flex-wrap gap-3 text-xs text-slate-400">
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-rose-500 bg-rose-950" />Likely root cause</span>
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-amber-500 bg-amber-950" />Impacted</span>
-      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-slate-600 bg-slate-900" />Healthy</span>
-      <span className="flex items-center gap-1"><i className="h-0 w-4 border-t-2 border-dashed border-rose-400" />Propagation path</span>
-      <span className="text-slate-500">% = cost change</span>
+    <div className="flex flex-wrap gap-3 text-xs text-muted">
+      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-alert bg-alert-soft" />Likely root cause</span>
+      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-warn-line bg-warn-soft" />Impacted</span>
+      <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm border border-line-strong bg-surface" />Healthy</span>
+      <span className="flex items-center gap-1"><i className="h-0 w-4 border-t-2 border-dashed border-alert" />Propagation path</span>
+      <span className="text-faint">% = cost change</span>
     </div>
   );
 }

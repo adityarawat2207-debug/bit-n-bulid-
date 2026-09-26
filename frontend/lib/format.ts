@@ -15,4 +15,4 @@ export const hourLabel = (iso: string) => {
 export const confidence = (n: number) => `${Math.round(n * 100)}%`;
 
 export const changeColor = (n: number) =>
-  n > 5 ? "text-rose-400" : n < -5 ? "text-emerald-400" : "text-slate-400";
+  n > 5 ? "text-alert" : n < -5 ? "text-ok" : "text-muted";

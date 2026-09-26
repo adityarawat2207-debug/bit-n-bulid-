@@ -46,3 +46,14 @@ export function useApi<T>(fn: () => Promise<Result<T>>, key: string): AsyncState
   const current = state.key === key;
   return { data: state.data, source: state.source, error: current ? state.error : null, loading: !current };
 }
+
+/** A counter that ticks every `ms` while `on`, for polling live scenarios. */
+export function useTick(on: boolean, ms = 3000): number {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!on) return;
+    const id = setInterval(() => setN((x) => x + 1), ms);
+    return () => clearInterval(id);
+  }, [on, ms]);
+  return on ? n : 0;
+}

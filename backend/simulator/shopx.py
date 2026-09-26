@@ -82,5 +82,12 @@ COMPANY = Company(
             # Order v3 N+1 bug: queries/request 3 -> 10.5. Decoy: search +10% traffic
             effects=[("ratio", ("order-service", DB), 3.5), ("demand", "search-service", 1.10)],
         ),
+        # Driven by telemetry from the local ShopX store (app/live.py). With no
+        # telemetry it is the baseline, which is what the tests see.
+        "shopx_live": dict(
+            name="Live storefront",
+            description="Real requests from the running ShopX store, replayed at production traffic",
+            expected=None, deployments=[], effects=[], live=True,
+        ),
     },
 )

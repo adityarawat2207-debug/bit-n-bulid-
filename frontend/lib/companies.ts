@@ -42,6 +42,10 @@ export const COMPANIES: Company[] = [
         name: "Database Overload",
         detail: "order-service v3.0 N+1 bug: queries per request 3 → 10.5. Decoy: search traffic +10%.",
       },
+      shopx_live: {
+        name: "Live storefront",
+        detail: "Real requests from the running ShopX store, replayed at production traffic.",
+      },
     },
     // ingress on top, services, then the resources they call
     layout: {
@@ -132,3 +136,6 @@ export const companyOf = (s: ScenarioId): Company =>
 export const scenarioName = (s: ScenarioId) => companyOf(s).scenarios[s]?.name ?? s;
 
 export const isBaseline = (s: ScenarioId) => companyOf(s).baseline === s;
+
+/** Scenarios driven by live telemetry from the ShopX store; the UI polls them. */
+export const isLive = (s: ScenarioId) => s === "shopx_live";
