@@ -1,0 +1,467 @@
+{
+ "incident": {
+  "id": "ridenow_matching_retry_storm",
+  "detected_at": "2026-09-22T12:00:00Z",
+  "onset_at": "2026-09-22T10:00:00Z",
+  "severity": "medium",
+  "cost_change_pct": 21.8
+ },
+ "root_cause": {
+  "service": "matching-service",
+  "confidence": 0.88,
+  "factors": {
+   "temporal": 1.0,
+   "dependency": 0.94,
+   "metric": 1.0,
+   "cost": 0.98,
+   "historical": 0.0
+  },
+  "evidence": [
+   "Calls/request to maps-api rose x4.00 (1.50 \u2192 6.01)",
+   "Calls/request to redis rose x2.00 (4.00 \u2192 8.00)",
+   "Deployed v3.0 2h before its own behaviour changed",
+   "Accounts for 94% of the estimated cost increase through the services it calls",
+   "Total calls to redis rose x2.24",
+   "Total calls to maps-api rose x4.48",
+   "Its change tracks the total cost curve (correlation 0.98)"
+  ]
+ },
+ "candidates": [
+  {
+   "service": "maps-api",
+   "confidence": 0.43,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.99,
+    "historical": 1.0
+   },
+   "why_not": "Its load rose x2.57, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "redis",
+   "confidence": 0.32,
+   "factors": {
+    "temporal": 0.6,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.96,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x1.19, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "payment-service",
+   "confidence": 0.24,
+   "factors": {
+    "temporal": 0.36,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.88,
+    "historical": 0.0
+   },
+   "why_not": "Its load rose x1.12, but that load is pushed by its callers; its own behaviour did not change"
+  },
+  {
+   "service": "trip-service",
+   "confidence": 0.19,
+   "factors": {
+    "temporal": 0.02,
+    "dependency": 0.05,
+    "metric": 0.17,
+    "cost": 0.91,
+    "historical": 0.0
+   },
+   "why_not": "Deployed v7.2 at 09:00, but its own behaviour did not change afterwards"
+  },
+  {
+   "service": "location-service",
+   "confidence": 0.07,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.11,
+    "historical": 0.5
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "database",
+   "confidence": 0.05,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.01,
+    "historical": 0.5
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "api-gateway",
+   "confidence": 0.03,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.19,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "rider-service",
+   "confidence": 0.02,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.01,
+    "cost": 0.1,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "pricing-service",
+   "confidence": 0.02,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.01,
+    "cost": 0.1,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "event-queue",
+   "confidence": 0.01,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.04,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  },
+  {
+   "service": "analytics",
+   "confidence": 0.0,
+   "factors": {
+    "temporal": 0.0,
+    "dependency": 0.0,
+    "metric": 0.0,
+    "cost": 0.0,
+    "historical": 0.0
+   },
+   "why_not": "No meaningful change in its own behaviour or load"
+  }
+ ],
+ "graph": {
+  "nodes": [
+   {
+    "id": "api-gateway",
+    "kind": "ingress",
+    "state": "normal",
+    "change_pct": 0.3
+   },
+   {
+    "id": "rider-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.3
+   },
+   {
+    "id": "location-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": -0.2
+   },
+   {
+    "id": "trip-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 7.3
+   },
+   {
+    "id": "matching-service",
+    "kind": "service",
+    "state": "root",
+    "change_pct": 27.7
+   },
+   {
+    "id": "pricing-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 0.0
+   },
+   {
+    "id": "payment-service",
+    "kind": "service",
+    "state": "normal",
+    "change_pct": 6.8
+   },
+   {
+    "id": "redis",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 11.1
+   },
+   {
+    "id": "event-queue",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": -0.2
+   },
+   {
+    "id": "maps-api",
+    "kind": "resource",
+    "state": "affected",
+    "change_pct": 140.3
+   },
+   {
+    "id": "database",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": 2.8
+   },
+   {
+    "id": "analytics",
+    "kind": "resource",
+    "state": "normal",
+    "change_pct": -0.6
+   }
+  ],
+  "edges": [
+   {
+    "source": "api-gateway",
+    "target": "rider-service",
+    "calls_change_pct": 0.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "location-service",
+    "calls_change_pct": -0.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "api-gateway",
+    "target": "trip-service",
+    "calls_change_pct": 12.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "rider-service",
+    "target": "pricing-service",
+    "calls_change_pct": 0.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "rider-service",
+    "target": "database",
+    "calls_change_pct": 0.6,
+    "on_propagation_path": false
+   },
+   {
+    "source": "location-service",
+    "target": "redis",
+    "calls_change_pct": -0.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "location-service",
+    "target": "event-queue",
+    "calls_change_pct": -0.4,
+    "on_propagation_path": false
+   },
+   {
+    "source": "trip-service",
+    "target": "matching-service",
+    "calls_change_pct": 12.0,
+    "on_propagation_path": false
+   },
+   {
+    "source": "trip-service",
+    "target": "database",
+    "calls_change_pct": 12.1,
+    "on_propagation_path": false
+   },
+   {
+    "source": "trip-service",
+    "target": "payment-service",
+    "calls_change_pct": 12.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "matching-service",
+    "target": "redis",
+    "calls_change_pct": 124.1,
+    "on_propagation_path": true
+   },
+   {
+    "source": "matching-service",
+    "target": "maps-api",
+    "calls_change_pct": 348.3,
+    "on_propagation_path": true
+   },
+   {
+    "source": "pricing-service",
+    "target": "maps-api",
+    "calls_change_pct": -0.2,
+    "on_propagation_path": false
+   },
+   {
+    "source": "pricing-service",
+    "target": "database",
+    "calls_change_pct": 0.5,
+    "on_propagation_path": false
+   },
+   {
+    "source": "event-queue",
+    "target": "analytics",
+    "calls_change_pct": -0.6,
+    "on_propagation_path": false
+   }
+  ]
+ },
+ "timeline": [
+  {
+   "t": "2026-09-22T08:00:00Z",
+   "service": "matching-service",
+   "label": "matching-service v3.0 deployed"
+  },
+  {
+   "t": "2026-09-22T09:00:00Z",
+   "service": "trip-service",
+   "label": "trip-service v7.2 deployed"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "matching-service",
+   "label": "calls/request to maps-api up x4.00"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "redis",
+   "label": "redis load up x1.19"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": "maps-api",
+   "label": "maps-api load up x2.57"
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "service": null,
+   "label": "Cloud cost starts rising"
+  },
+  {
+   "t": "2026-09-22T12:00:00Z",
+   "service": null,
+   "label": "Cost anomaly detected (+21.8%)"
+  }
+ ],
+ "impact": {
+  "total_monthly": 3063,
+  "by_cause": [
+   {
+    "service": "matching-service",
+    "amount": 2900,
+    "landed": [
+     {
+      "service": "maps-api",
+      "amount": 2542
+     },
+     {
+      "service": "matching-service",
+      "amount": 235
+     },
+     {
+      "service": "redis",
+      "amount": 123
+     }
+    ]
+   },
+   {
+    "service": "trip-service",
+    "amount": 163,
+    "landed": [
+     {
+      "service": "database",
+      "amount": 103
+     },
+     {
+      "service": "trip-service",
+      "amount": 45
+     },
+     {
+      "service": "payment-service",
+      "amount": 12
+     },
+     {
+      "service": "api-gateway",
+      "amount": 3
+     }
+    ]
+   }
+  ]
+ },
+ "recommendations": [
+  {
+   "id": "fix_amplification:matching-service:maps-api",
+   "title": "Fix matching-service call amplification to maps-api",
+   "action": {
+    "type": "fix_amplification",
+    "source": "matching-service",
+    "target": "maps-api"
+   },
+   "savings_monthly": 2584,
+   "latency_pct": -22.5,
+   "error_pp": 0.0,
+   "db_cpu": 0.603,
+   "risk": "low",
+   "verdict": "RECOMMENDED",
+   "reasons": []
+  },
+  {
+   "id": "reduce_capacity:database:1.25",
+   "title": "Add database capacity +25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 1.25
+   },
+   "savings_monthly": -325,
+   "latency_pct": -4.4,
+   "error_pp": 0.0,
+   "db_cpu": 0.483,
+   "risk": "medium",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "costs $325/month more instead of saving"
+   ]
+  },
+  {
+   "id": "reduce_capacity:database:0.75",
+   "title": "Reduce database capacity 25%",
+   "action": {
+    "type": "reduce_capacity",
+    "target": "database",
+    "value": 0.75
+   },
+   "savings_monthly": 325,
+   "latency_pct": 19.2,
+   "error_pp": 0.0,
+   "db_cpu": 0.805,
+   "risk": "high",
+   "verdict": "NOT RECOMMENDED",
+   "reasons": [
+    "latency +19% > +10% limit"
+   ]
+  }
+ ]
+}

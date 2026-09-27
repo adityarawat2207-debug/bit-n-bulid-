@@ -1,0 +1,74 @@
+[
+ {
+  "id": "baseline",
+  "name": "Healthy baseline",
+  "description": "Normal ShopX traffic with no incident",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
+  "id": "search_query_explosion",
+  "name": "Search Query Explosion",
+  "description": "Search v2.0 deploy multiplies database queries per request",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
+  "id": "traffic_spike",
+  "name": "Traffic Spike",
+  "description": "Image traffic jumps +340%; an unrelated search deploy lands just before it",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
+  "id": "database_overload",
+  "name": "Database Overload",
+  "description": "Order v3.0 ships an N+1 query bug that saturates the database",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
+  "id": "shopx_live",
+  "name": "Live storefront",
+  "description": "Real requests from the running ShopX store, replayed at production traffic",
+  "company": "shopx",
+  "company_name": "ShopX",
+  "baseline": "baseline"
+ },
+ {
+  "id": "ridenow_baseline",
+  "name": "Healthy baseline",
+  "description": "Normal RideNow traffic with no incident",
+  "company": "ridenow",
+  "company_name": "RideNow",
+  "baseline": "ridenow_baseline"
+ },
+ {
+  "id": "ridenow_surge_pricing_storm",
+  "name": "Surge Pricing Storm",
+  "description": "Pricing v4.0 calls the maps API for every nearby driver on each fare quote",
+  "company": "ridenow",
+  "company_name": "RideNow",
+  "baseline": "ridenow_baseline"
+ },
+ {
+  "id": "ridenow_gps_ping_flood",
+  "name": "GPS Ping Flood",
+  "description": "Location v5.2 drops ping batching, so every driver GPS fix is its own request",
+  "company": "ridenow",
+  "company_name": "RideNow",
+  "baseline": "ridenow_baseline"
+ },
+ {
+  "id": "ridenow_matching_retry_storm",
+  "name": "Matching Retry Storm",
+  "description": "Matching v3.0 retries pickup-ETA lookups on timeout, multiplying maps API calls",
+  "company": "ridenow",
+  "company_name": "RideNow",
+  "baseline": "ridenow_baseline"
+ }
+]

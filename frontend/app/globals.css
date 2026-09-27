@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-plex);
+}
+
+/* Quiet, light instrument. Neutral greys carry the layout; one blue marks
+   interaction, and red is reserved for anomalies and the likely root cause. */
+@theme {
+  --color-canvas: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-raised: #ffffff;
+  --color-sunk: #eef0f3;
+  --color-ink: #1a1d23;
+  --color-ink-2: #3d434f;
+  --color-muted: #646b78;
+  --color-faint: #8a919c;
+  --color-line: #e4e7eb;
+  --color-line-strong: #cfd4db;
+
+  --color-brand: #2456c8;
+  --color-brand-soft: #edf2fc;
+
+  --color-alert: #c3372c;
+  --color-alert-soft: #fcf1f0;
+  --color-alert-line: #efc5c0;
+
+  --color-warn: #9a6210;
+  --color-warn-soft: #fcf5e8;
+  --color-warn-line: #ecd6a8;
+
+  --color-ok: #1b7a4b;
+  --color-ok-soft: #edf7f1;
+  --color-ok-line: #c2e1cf;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: rgb(36 86 200 / 0.18);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input[type="range"] {
+  cursor: pointer;
+  accent-color: var(--color-brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* React Flow on a white panel. The library stylesheet loads after this
+   file, so these selectors are scoped under .cp-graph to win on specificity. */
+.cp-graph .react-flow__attribution {
+  background: transparent;
+  opacity: 0.5;
+}
+.cp-graph .react-flow__attribution a {
+  color: var(--color-faint);
+}
+.cp-graph .react-flow__edge-textbg {
+  fill: var(--color-surface);
+}
+.cp-graph .react-flow__edge-text {
+  fill: var(--color-muted);
+  font-size: 10px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.cp-graph .react-flow__edge.hot .react-flow__edge-text {
+  fill: var(--color-alert);
+  font-weight: 600;
+}
+.cp-graph .react-flow__handle {
+  opacity: 0;
+}

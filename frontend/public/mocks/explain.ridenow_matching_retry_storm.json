@@ -1,0 +1,18 @@
+{
+ "text": "Cloud cost is running 21.8% above its baseline (medium severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is matching-service (root-cause confidence 88%). Its own behaviour changed, and the extra load spread along matching-service -> redis, matching-service -> maps-api. The next candidate, maps-api (43%), was ruled out: its load rose x2.57, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to matching-service: $2,900/month.\n\nSupporting evidence:\n- Calls/request to maps-api rose x4.00 (1.50 \u2192 6.01)\n- Calls/request to redis rose x2.00 (4.00 \u2192 8.00)\n- Deployed v3.0 2h before its own behaviour changed\n- Accounts for 94% of the estimated cost increase through the services it calls\n- Total calls to redis rose x2.24\n- Total calls to maps-api rose x4.48\n- Its change tracks the total cost curve (correlation 0.98)\n\nRecommended: Fix matching-service call amplification to maps-api. Estimated saving $2,584/month, latency -22.5%, error rate +0.0pp, risk low. Not recommended: Reduce database capacity 25%, because latency +19% > +10% limit.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 21.8% above its baseline (medium severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is matching-service (root-cause confidence 88%). Its own behaviour changed, and the extra load spread along matching-service -> redis, matching-service -> maps-api. The next candidate, maps-api (43%), was ruled out: its load rose x2.57, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to matching-service: $2,900/month.",
+  "evidence": [
+   "Calls/request to maps-api rose x4.00 (1.50 \u2192 6.01)",
+   "Calls/request to redis rose x2.00 (4.00 \u2192 8.00)",
+   "Deployed v3.0 2h before its own behaviour changed",
+   "Accounts for 94% of the estimated cost increase through the services it calls",
+   "Total calls to redis rose x2.24",
+   "Total calls to maps-api rose x4.48",
+   "Its change tracks the total cost curve (correlation 0.98)"
+  ],
+  "recommendation_explanation": "Recommended: Fix matching-service call amplification to maps-api. Estimated saving $2,584/month, latency -22.5%, error rate +0.0pp, risk low. Not recommended: Reduce database capacity 25%, because latency +19% > +10% limit."
+ }
+}

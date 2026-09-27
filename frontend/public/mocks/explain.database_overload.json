@@ -1,0 +1,16 @@
+{
+ "text": "Cloud cost is running 27.4% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is order-service (root-cause confidence 86%). Its own behaviour changed, and the extra load spread along order-service -> database, database -> analytics. The next candidate, search-service (43%), was ruled out: its own change (user requests x1.10) is real but explains only 16% of the estimated cost increase. Estimated impact traced to order-service: $2,357/month.\n\nSupporting evidence:\n- Queries/request to database rose x3.49 (3.00 \u2192 10.48)\n- Deployed v3.0 1h before its own behaviour changed\n- Accounts for 83% of the estimated cost increase through the services it calls\n- Total calls to database rose x3.50\n- Its change tracks the total cost curve (correlation 0.99)\n\nRecommended: Fix order-service query amplification to database. Estimated saving $2,543/month, latency -85.2%, error rate -0.46pp, risk low. Not recommended: Reduce database capacity 25%, because latency +127% > +10% limit; error rate +25.2pp > +0.5pp limit; DB CPU 132% > 85% headroom limit.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 27.4% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is order-service (root-cause confidence 86%). Its own behaviour changed, and the extra load spread along order-service -> database, database -> analytics. The next candidate, search-service (43%), was ruled out: its own change (user requests x1.10) is real but explains only 16% of the estimated cost increase. Estimated impact traced to order-service: $2,357/month.",
+  "evidence": [
+   "Queries/request to database rose x3.49 (3.00 \u2192 10.48)",
+   "Deployed v3.0 1h before its own behaviour changed",
+   "Accounts for 83% of the estimated cost increase through the services it calls",
+   "Total calls to database rose x3.50",
+   "Its change tracks the total cost curve (correlation 0.99)"
+  ],
+  "recommendation_explanation": "Recommended: Fix order-service query amplification to database. Estimated saving $2,543/month, latency -85.2%, error rate -0.46pp, risk low. Not recommended: Reduce database capacity 25%, because latency +127% > +10% limit; error rate +25.2pp > +0.5pp limit; DB CPU 132% > 85% headroom limit."
+ }
+}

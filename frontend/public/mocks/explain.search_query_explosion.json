@@ -1,0 +1,19 @@
+{
+ "text": "Cloud cost is running 36.1% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is search-service (root-cause confidence 95%). Its own behaviour changed, and the extra load spread along search-service -> redis, search-service -> database, database -> analytics. The next candidate, analytics (38%), was ruled out: its load rose x3.50, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to search-service: $3,708/month.\n\nSupporting evidence:\n- Queries/request to database rose x3.98 (1.20 \u2192 4.78)\n- User requests rose x1.20 (42,640 \u2192 51,236 per minute)\n- Deployed v2.0 1h before its own behaviour changed\n- Accounts for 100% of the estimated cost increase through the services it calls\n- Total calls to redis rose x1.20\n- Total calls to database rose x4.78\n- Its change tracks the total cost curve (correlation 0.99)\n- 1 similar past incident on record\n\nRecommended: Fix search-service query amplification to database. Estimated saving $3,171/month, latency -70.5%, error rate -0.14pp, risk low. Not recommended: Reduce database capacity 25%, because latency +167% > +10% limit; error rate +17.0pp > +0.5pp limit; DB CPU 119% > 85% headroom limit.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 36.1% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is search-service (root-cause confidence 95%). Its own behaviour changed, and the extra load spread along search-service -> redis, search-service -> database, database -> analytics. The next candidate, analytics (38%), was ruled out: its load rose x3.50, but that load is pushed by its callers; its own behaviour did not change. Estimated impact traced to search-service: $3,708/month.",
+  "evidence": [
+   "Queries/request to database rose x3.98 (1.20 \u2192 4.78)",
+   "User requests rose x1.20 (42,640 \u2192 51,236 per minute)",
+   "Deployed v2.0 1h before its own behaviour changed",
+   "Accounts for 100% of the estimated cost increase through the services it calls",
+   "Total calls to redis rose x1.20",
+   "Total calls to database rose x4.78",
+   "Its change tracks the total cost curve (correlation 0.99)",
+   "1 similar past incident on record"
+  ],
+  "recommendation_explanation": "Recommended: Fix search-service query amplification to database. Estimated saving $3,171/month, latency -70.5%, error rate -0.14pp, risk low. Not recommended: Reduce database capacity 25%, because latency +167% > +10% limit; error rate +17.0pp > +0.5pp limit; DB CPU 119% > 85% headroom limit."
+ }
+}

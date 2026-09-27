@@ -1,0 +1,1110 @@
+{
+ "scenario": "database_overload",
+ "company": "shopx",
+ "kpis": {
+  "current_monthly": 13101,
+  "baseline_monthly": 10283,
+  "change_pct": 27.4,
+  "active_anomalies": 1,
+  "preventable_monthly": 2543
+ },
+ "hourly": [
+  {
+   "t": "2026-09-19T00:00:00Z",
+   "cost_monthly": 9082,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-19T01:00:00Z",
+   "cost_monthly": 9018,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-19T02:00:00Z",
+   "cost_monthly": 8976,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-19T03:00:00Z",
+   "cost_monthly": 8962,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-19T04:00:00Z",
+   "cost_monthly": 8983,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-19T05:00:00Z",
+   "cost_monthly": 9243,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-19T06:00:00Z",
+   "cost_monthly": 9458,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-19T07:00:00Z",
+   "cost_monthly": 10033,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-19T08:00:00Z",
+   "cost_monthly": 10422,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-19T09:00:00Z",
+   "cost_monthly": 10549,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-19T10:00:00Z",
+   "cost_monthly": 10798,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-19T11:00:00Z",
+   "cost_monthly": 11168,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-19T12:00:00Z",
+   "cost_monthly": 11479,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-19T13:00:00Z",
+   "cost_monthly": 11611,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-19T14:00:00Z",
+   "cost_monthly": 11607,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-19T15:00:00Z",
+   "cost_monthly": 11459,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-19T16:00:00Z",
+   "cost_monthly": 11336,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-19T17:00:00Z",
+   "cost_monthly": 11301,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-19T18:00:00Z",
+   "cost_monthly": 11052,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-19T19:00:00Z",
+   "cost_monthly": 10560,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-19T20:00:00Z",
+   "cost_monthly": 10227,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-19T21:00:00Z",
+   "cost_monthly": 9913,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-19T22:00:00Z",
+   "cost_monthly": 9674,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-19T23:00:00Z",
+   "cost_monthly": 9190,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-20T00:00:00Z",
+   "cost_monthly": 9094,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-20T01:00:00Z",
+   "cost_monthly": 8878,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-20T02:00:00Z",
+   "cost_monthly": 8969,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-20T03:00:00Z",
+   "cost_monthly": 8903,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-20T04:00:00Z",
+   "cost_monthly": 8997,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-20T05:00:00Z",
+   "cost_monthly": 9179,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-20T06:00:00Z",
+   "cost_monthly": 9632,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-20T07:00:00Z",
+   "cost_monthly": 9853,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-20T08:00:00Z",
+   "cost_monthly": 10458,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-20T09:00:00Z",
+   "cost_monthly": 10662,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-20T10:00:00Z",
+   "cost_monthly": 11055,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-20T11:00:00Z",
+   "cost_monthly": 11253,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-20T12:00:00Z",
+   "cost_monthly": 11572,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-20T13:00:00Z",
+   "cost_monthly": 11797,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-20T14:00:00Z",
+   "cost_monthly": 11739,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-20T15:00:00Z",
+   "cost_monthly": 11571,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-20T16:00:00Z",
+   "cost_monthly": 11662,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-20T17:00:00Z",
+   "cost_monthly": 11122,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-20T18:00:00Z",
+   "cost_monthly": 11180,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-20T19:00:00Z",
+   "cost_monthly": 10645,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-20T20:00:00Z",
+   "cost_monthly": 10072,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-20T21:00:00Z",
+   "cost_monthly": 9964,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-20T22:00:00Z",
+   "cost_monthly": 9469,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-20T23:00:00Z",
+   "cost_monthly": 9304,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-21T00:00:00Z",
+   "cost_monthly": 9052,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-21T01:00:00Z",
+   "cost_monthly": 8878,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-21T02:00:00Z",
+   "cost_monthly": 8930,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-21T03:00:00Z",
+   "cost_monthly": 8701,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-21T04:00:00Z",
+   "cost_monthly": 9109,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-21T05:00:00Z",
+   "cost_monthly": 9250,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-21T06:00:00Z",
+   "cost_monthly": 9482,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-21T07:00:00Z",
+   "cost_monthly": 9849,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-21T08:00:00Z",
+   "cost_monthly": 10152,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-21T09:00:00Z",
+   "cost_monthly": 10817,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-21T10:00:00Z",
+   "cost_monthly": 10998,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-21T11:00:00Z",
+   "cost_monthly": 11260,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-21T12:00:00Z",
+   "cost_monthly": 11276,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-21T13:00:00Z",
+   "cost_monthly": 11669,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-21T14:00:00Z",
+   "cost_monthly": 11812,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-21T15:00:00Z",
+   "cost_monthly": 11622,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-21T16:00:00Z",
+   "cost_monthly": 11559,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-21T17:00:00Z",
+   "cost_monthly": 11144,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-21T18:00:00Z",
+   "cost_monthly": 11065,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-21T19:00:00Z",
+   "cost_monthly": 10582,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-21T20:00:00Z",
+   "cost_monthly": 10251,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-21T21:00:00Z",
+   "cost_monthly": 9915,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-21T22:00:00Z",
+   "cost_monthly": 9570,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-21T23:00:00Z",
+   "cost_monthly": 9229,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-22T00:00:00Z",
+   "cost_monthly": 9021,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-22T01:00:00Z",
+   "cost_monthly": 8956,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-22T02:00:00Z",
+   "cost_monthly": 8852,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-22T03:00:00Z",
+   "cost_monthly": 8749,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-22T04:00:00Z",
+   "cost_monthly": 8994,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-22T05:00:00Z",
+   "cost_monthly": 9512,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-22T06:00:00Z",
+   "cost_monthly": 9520,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-22T07:00:00Z",
+   "cost_monthly": 10054,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-22T08:00:00Z",
+   "cost_monthly": 10327,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-22T09:00:00Z",
+   "cost_monthly": 10713,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-22T10:00:00Z",
+   "cost_monthly": 14191,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-22T11:00:00Z",
+   "cost_monthly": 14622,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-22T12:00:00Z",
+   "cost_monthly": 14681,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-22T13:00:00Z",
+   "cost_monthly": 14877,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-22T14:00:00Z",
+   "cost_monthly": 15552,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-22T15:00:00Z",
+   "cost_monthly": 15224,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-22T16:00:00Z",
+   "cost_monthly": 14908,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-22T17:00:00Z",
+   "cost_monthly": 14708,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-22T18:00:00Z",
+   "cost_monthly": 14070,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-22T19:00:00Z",
+   "cost_monthly": 13454,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-22T20:00:00Z",
+   "cost_monthly": 13452,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-22T21:00:00Z",
+   "cost_monthly": 12488,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-22T22:00:00Z",
+   "cost_monthly": 11939,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-22T23:00:00Z",
+   "cost_monthly": 11598,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-23T00:00:00Z",
+   "cost_monthly": 11275,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-23T01:00:00Z",
+   "cost_monthly": 11137,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-23T02:00:00Z",
+   "cost_monthly": 10770,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-23T03:00:00Z",
+   "cost_monthly": 11076,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-23T04:00:00Z",
+   "cost_monthly": 11169,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-23T05:00:00Z",
+   "cost_monthly": 11609,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-23T06:00:00Z",
+   "cost_monthly": 11829,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-23T07:00:00Z",
+   "cost_monthly": 12428,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-23T08:00:00Z",
+   "cost_monthly": 13123,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-23T09:00:00Z",
+   "cost_monthly": 13535,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-23T10:00:00Z",
+   "cost_monthly": 14163,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-23T11:00:00Z",
+   "cost_monthly": 14379,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-23T12:00:00Z",
+   "cost_monthly": 14725,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-23T13:00:00Z",
+   "cost_monthly": 15226,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-23T14:00:00Z",
+   "cost_monthly": 15163,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-23T15:00:00Z",
+   "cost_monthly": 14937,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-23T16:00:00Z",
+   "cost_monthly": 14887,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-23T17:00:00Z",
+   "cost_monthly": 14646,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-23T18:00:00Z",
+   "cost_monthly": 14331,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-23T19:00:00Z",
+   "cost_monthly": 13527,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-23T20:00:00Z",
+   "cost_monthly": 12991,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-23T21:00:00Z",
+   "cost_monthly": 12330,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-23T22:00:00Z",
+   "cost_monthly": 11950,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-23T23:00:00Z",
+   "cost_monthly": 11550,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-24T00:00:00Z",
+   "cost_monthly": 11243,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-24T01:00:00Z",
+   "cost_monthly": 10908,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-24T02:00:00Z",
+   "cost_monthly": 11244,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-24T03:00:00Z",
+   "cost_monthly": 10912,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-24T04:00:00Z",
+   "cost_monthly": 11294,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-24T05:00:00Z",
+   "cost_monthly": 11668,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-24T06:00:00Z",
+   "cost_monthly": 11891,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-24T07:00:00Z",
+   "cost_monthly": 12452,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-24T08:00:00Z",
+   "cost_monthly": 13082,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-24T09:00:00Z",
+   "cost_monthly": 13797,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-24T10:00:00Z",
+   "cost_monthly": 14475,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-24T11:00:00Z",
+   "cost_monthly": 14488,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-24T12:00:00Z",
+   "cost_monthly": 14945,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-24T13:00:00Z",
+   "cost_monthly": 15079,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-24T14:00:00Z",
+   "cost_monthly": 15387,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-24T15:00:00Z",
+   "cost_monthly": 15389,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-24T16:00:00Z",
+   "cost_monthly": 14880,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-24T17:00:00Z",
+   "cost_monthly": 14574,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-24T18:00:00Z",
+   "cost_monthly": 14572,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-24T19:00:00Z",
+   "cost_monthly": 13363,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-24T20:00:00Z",
+   "cost_monthly": 13106,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-24T21:00:00Z",
+   "cost_monthly": 12558,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-24T22:00:00Z",
+   "cost_monthly": 12076,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-24T23:00:00Z",
+   "cost_monthly": 11606,
+   "baseline_monthly": 9266
+  },
+  {
+   "t": "2026-09-25T00:00:00Z",
+   "cost_monthly": 11334,
+   "baseline_monthly": 9038
+  },
+  {
+   "t": "2026-09-25T01:00:00Z",
+   "cost_monthly": 10959,
+   "baseline_monthly": 8889
+  },
+  {
+   "t": "2026-09-25T02:00:00Z",
+   "cost_monthly": 10909,
+   "baseline_monthly": 8923
+  },
+  {
+   "t": "2026-09-25T03:00:00Z",
+   "cost_monthly": 11191,
+   "baseline_monthly": 8939
+  },
+  {
+   "t": "2026-09-25T04:00:00Z",
+   "cost_monthly": 10993,
+   "baseline_monthly": 9084
+  },
+  {
+   "t": "2026-09-25T05:00:00Z",
+   "cost_monthly": 11390,
+   "baseline_monthly": 9226
+  },
+  {
+   "t": "2026-09-25T06:00:00Z",
+   "cost_monthly": 12130,
+   "baseline_monthly": 9545
+  },
+  {
+   "t": "2026-09-25T07:00:00Z",
+   "cost_monthly": 12562,
+   "baseline_monthly": 9911
+  },
+  {
+   "t": "2026-09-25T08:00:00Z",
+   "cost_monthly": 12862,
+   "baseline_monthly": 10293
+  },
+  {
+   "t": "2026-09-25T09:00:00Z",
+   "cost_monthly": 13717,
+   "baseline_monthly": 10646
+  },
+  {
+   "t": "2026-09-25T10:00:00Z",
+   "cost_monthly": 14308,
+   "baseline_monthly": 10994
+  },
+  {
+   "t": "2026-09-25T11:00:00Z",
+   "cost_monthly": 14781,
+   "baseline_monthly": 11295
+  },
+  {
+   "t": "2026-09-25T12:00:00Z",
+   "cost_monthly": 14828,
+   "baseline_monthly": 11520
+  },
+  {
+   "t": "2026-09-25T13:00:00Z",
+   "cost_monthly": 15021,
+   "baseline_monthly": 11649
+  },
+  {
+   "t": "2026-09-25T14:00:00Z",
+   "cost_monthly": 15082,
+   "baseline_monthly": 11750
+  },
+  {
+   "t": "2026-09-25T15:00:00Z",
+   "cost_monthly": 15294,
+   "baseline_monthly": 11627
+  },
+  {
+   "t": "2026-09-25T16:00:00Z",
+   "cost_monthly": 14998,
+   "baseline_monthly": 11515
+  },
+  {
+   "t": "2026-09-25T17:00:00Z",
+   "cost_monthly": 14620,
+   "baseline_monthly": 11291
+  },
+  {
+   "t": "2026-09-25T18:00:00Z",
+   "cost_monthly": 14247,
+   "baseline_monthly": 11030
+  },
+  {
+   "t": "2026-09-25T19:00:00Z",
+   "cost_monthly": 13675,
+   "baseline_monthly": 10645
+  },
+  {
+   "t": "2026-09-25T20:00:00Z",
+   "cost_monthly": 13002,
+   "baseline_monthly": 10265
+  },
+  {
+   "t": "2026-09-25T21:00:00Z",
+   "cost_monthly": 12553,
+   "baseline_monthly": 9912
+  },
+  {
+   "t": "2026-09-25T22:00:00Z",
+   "cost_monthly": 12080,
+   "baseline_monthly": 9548
+  },
+  {
+   "t": "2026-09-25T23:00:00Z",
+   "cost_monthly": 11670,
+   "baseline_monthly": 9266
+  }
+ ],
+ "daily": [
+  {
+   "date": "2026-08-27",
+   "cost": 340.1,
+   "anomalous": false
+  },
+  {
+   "date": "2026-08-28",
+   "cost": 340.5,
+   "anomalous": false
+  },
+  {
+   "date": "2026-08-29",
+   "cost": 340.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-08-30",
+   "cost": 341.4,
+   "anomalous": false
+  },
+  {
+   "date": "2026-08-31",
+   "cost": 342.2,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-01",
+   "cost": 342.9,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-02",
+   "cost": 341.5,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-03",
+   "cost": 342.2,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-04",
+   "cost": 341.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-05",
+   "cost": 342.2,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-06",
+   "cost": 342.4,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-07",
+   "cost": 342.3,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-08",
+   "cost": 342.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-09",
+   "cost": 341.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-10",
+   "cost": 342.9,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-11",
+   "cost": 345.6,
+   "anomalous": true
+  },
+  {
+   "date": "2026-09-12",
+   "cost": 341.8,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-13",
+   "cost": 341.6,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-14",
+   "cost": 343.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-15",
+   "cost": 343.0,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-16",
+   "cost": 342.1,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-17",
+   "cost": 343.7,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-18",
+   "cost": 343.3,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-19",
+   "cost": 341.8,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-20",
+   "cost": 343.1,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-21",
+   "cost": 341.9,
+   "anomalous": false
+  },
+  {
+   "date": "2026-09-22",
+   "cost": 403.4,
+   "anomalous": true
+  },
+  {
+   "date": "2026-09-23",
+   "cost": 434.4,
+   "anomalous": true
+  },
+  {
+   "date": "2026-09-24",
+   "cost": 437.5,
+   "anomalous": true
+  },
+  {
+   "date": "2026-09-25",
+   "cost": 436.4,
+   "anomalous": true
+  }
+ ],
+ "breakdown": [
+  {
+   "category": "database",
+   "baseline": 2822,
+   "current": 5046
+  },
+  {
+   "category": "compute",
+   "baseline": 2918,
+   "current": 3091
+  },
+  {
+   "category": "network",
+   "baseline": 1505,
+   "current": 1869
+  },
+  {
+   "category": "storage",
+   "baseline": 1790,
+   "current": 1790
+  },
+  {
+   "category": "cache",
+   "baseline": 948,
+   "current": 1004
+  },
+  {
+   "category": "cdn",
+   "baseline": 300,
+   "current": 301
+  }
+ ],
+ "services": [
+  {
+   "id": "api-gateway",
+   "kind": "ingress",
+   "cost_baseline": 975,
+   "cost_current": 1019,
+   "change_pct": 4.6
+  },
+  {
+   "id": "auth-service",
+   "kind": "service",
+   "cost_baseline": 406,
+   "cost_current": 413,
+   "change_pct": 1.7
+  },
+  {
+   "id": "search-service",
+   "kind": "service",
+   "cost_baseline": 1555,
+   "cost_current": 1681,
+   "change_pct": 8.1
+  },
+  {
+   "id": "order-service",
+   "kind": "service",
+   "cost_baseline": 562,
+   "cost_current": 817,
+   "change_pct": 45.3
+  },
+  {
+   "id": "image-service",
+   "kind": "service",
+   "cost_baseline": 513,
+   "cost_current": 515,
+   "change_pct": 0.4
+  },
+  {
+   "id": "payment-service",
+   "kind": "service",
+   "cost_baseline": 150,
+   "cost_current": 150,
+   "change_pct": -0.0
+  },
+  {
+   "id": "redis",
+   "kind": "resource",
+   "cost_baseline": 948,
+   "cost_current": 1004,
+   "change_pct": 5.9
+  },
+  {
+   "id": "cdn",
+   "kind": "resource",
+   "cost_baseline": 300,
+   "cost_current": 301,
+   "change_pct": 0.3
+  },
+  {
+   "id": "database",
+   "kind": "resource",
+   "cost_baseline": 4230,
+   "cost_current": 6460,
+   "change_pct": 52.7
+  },
+  {
+   "id": "analytics",
+   "kind": "resource",
+   "cost_baseline": 645,
+   "cost_current": 741,
+   "change_pct": 15.0
+  }
+ ],
+ "active_incident_id": "database_overload"
+}

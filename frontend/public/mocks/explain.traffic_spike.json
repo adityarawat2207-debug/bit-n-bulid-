@@ -1,0 +1,15 @@
+{
+ "text": "Cloud cost is running 25.2% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.\n\nThe likely root cause is image-service (root-cause confidence 78%). Its own behaviour changed, and the extra load spread along image-service -> cdn. The next candidate, api-gateway (33%), was ruled out: its load rose x1.82, but it only forwards user traffic; the extra requests belong to the services behind it. Estimated impact traced to image-service: $2,571/month.\n\nSupporting evidence:\n- User requests rose x4.42 (20,346 \u2192 89,990 per minute)\n- Accounts for 99% of the estimated cost increase through the services it calls\n- Total calls to cdn rose x4.42\n- Its change tracks the total cost curve (correlation 0.99)\n\nRecommended: Rate-limit image-service to 1.2x baseline traffic. Estimated saving $2,467/month, latency +0.0%, error rate +0.0pp, risk medium.",
+ "source": "template",
+ "sections": {
+  "summary": "Cloud cost is running 25.2% above its baseline (high severity). The increase began at 2026-09-22 10:00 UTC and was detected at 2026-09-22 12:00 UTC.",
+  "root_cause_explanation": "The likely root cause is image-service (root-cause confidence 78%). Its own behaviour changed, and the extra load spread along image-service -> cdn. The next candidate, api-gateway (33%), was ruled out: its load rose x1.82, but it only forwards user traffic; the extra requests belong to the services behind it. Estimated impact traced to image-service: $2,571/month.",
+  "evidence": [
+   "User requests rose x4.42 (20,346 \u2192 89,990 per minute)",
+   "Accounts for 99% of the estimated cost increase through the services it calls",
+   "Total calls to cdn rose x4.42",
+   "Its change tracks the total cost curve (correlation 0.99)"
+  ],
+  "recommendation_explanation": "Recommended: Rate-limit image-service to 1.2x baseline traffic. Estimated saving $2,467/month, latency +0.0%, error rate +0.0pp, risk medium."
+ }
+}
